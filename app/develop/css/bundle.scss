@@ -1,0 +1,32 @@
+$stage-w: 640px;
+$stage-h: 384px;
+
+body {
+  margin: 0;
+}
+h1 {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  font-size: 24px;
+  color: #34363c;
+  margin-top: $stage-h * -0.5 - 64;
+  text-align: center;
+}
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: $stage-w * -0.5;
+  margin-top: $stage-h * -0.5;
+  width: $stage-w;
+  height: $stage-h;
+  background: #34363c;
+  overflow: hidden;
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
