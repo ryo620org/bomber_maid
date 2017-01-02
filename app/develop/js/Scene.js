@@ -10,7 +10,7 @@
 // ================
 
 var Config = require('./Config'),
-    Block = require('./Block');
+    Block  = require('./Block');
 
 
 // ================

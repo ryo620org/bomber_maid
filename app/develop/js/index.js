@@ -5,8 +5,17 @@
 
 'use strict';
 
-require('pixi.js');
 
+// ================
+//     MODULE
+// ================
+
+require('pixi.js');
+var Config       = require('./Config'),
+    Character    = require('./Character'),
+    Stage        = require('./Stage'),
+    Debug        = require('./Debug'),
+    Scene        = require('./Scene');
 
 
 /**
@@ -20,38 +29,97 @@ var BOMBER_MAID = BOMBER_MAID || {};
  * @memberof BOMBER_MAID
  */
 BOMBER_MAID.BOMBER_MAID_OBJECT = {
+
+  /**
+   * 初期化
+   */
   init: function () {
 
-    var Config       = require('./Config'),
-        Character    = require('./Character'),
-        Controller   = require('./Controller'),
-        Stage        = require('./Stage'),
-        Debug        = require('./Debug'),
-        Scene        = require('./Scene'),
-
-        /**
-         * ローダーを生成
-         */
-        loader = new PIXI.loaders.Loader();
+    var i;
 
     /**
-     * 画像の読み込み
+     * キーの状態を保存
+     * true: 押されている, false: 押されていない
+     */
+    this.keyStatus = [];
+
+    for (i = 0; i < Config.KEY_QTY; i++) {
+      this.keyStatus.push(false);
+    }
+
+    /**
+     * キーボードが押されたイベント
+     */
+    document.addEventListener('keydown', function (e){
+      this.keyStatus[e.keyCode] = true;
+    }.bind(this), false);
+
+    document.addEventListener('keyup', function (e){
+      this.keyStatus[e.keyCode] = false;
+    }.bind(this), false);
+
+    /**
+     * ローダーを生成
+     */
+    var loader = new PIXI.loaders.Loader();
+
+    /**
+     * 画像の読込後、ゲーム開始
      */
     loader
     .add('sprite', './_assets/img/sprite.json')
     .once('complete', function(){
-      new Stage();
-      new Debug();
-      new Scene();
-      Config.character  = new Character();
-      Config.controller = new Controller();
-    });
+
+      this.startGame();
+
+    }.bind(this));
 
     /**
      * 読み込む
      */
     loader.load();
 
+  },
+
+  /**
+   * ゲーム開始
+   */
+  startGame: function () {
+
+    new Stage();
+    new Debug();
+    new Scene();
+
+    this.character  = new Character();
+
+    this.mainLoop();
+
+  },
+
+
+  /**
+   * メインループ
+   */
+  mainLoop: function () {
+
+    var tick = function () {
+      requestAnimationFrame(tick);
+
+      if (this.keyStatus[Config.KEY_LEFT]) {
+        this.character.move('left');
+      }
+      if (this.keyStatus[Config.KEY_UP]) {
+        this.character.move('up');
+      }
+      if (this.keyStatus[Config.KEY_RIGHT]) {
+        this.character.move('right');
+      }
+      if (this.keyStatus[Config.KEY_DOWN]) {
+        this.character.move('down');
+      }
+    }.bind(this);
+
+    tick();
   }
 };
 

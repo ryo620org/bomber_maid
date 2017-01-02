@@ -44,3 +44,18 @@ Config.UNIT_SIZE = 64;
  */
 Config.VERTICAL_UNIT   = Config.HEIGHT / Config.UNIT_SIZE - 1; // 11
 Config.HORIZONTAL_UNIT = Config.WIDTH / Config.UNIT_SIZE; // 20
+
+/**
+ * キーコード
+ * @constant
+ */
+Config.KEY_LEFT  = 37;
+Config.KEY_UP    = 38;
+Config.KEY_RIGHT = 39;
+Config.KEY_DOWN  = 40;
+
+/**
+ * キーの数
+ * @constant
+ */
+Config.KEY_QTY   = 256;
