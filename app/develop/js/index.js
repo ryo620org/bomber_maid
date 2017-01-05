@@ -11,6 +11,7 @@
 // ================
 
 require('pixi.js');
+require('./lib/TweenMax.min.js');
 var Config       = require('./Config'),
     Character    = require('./Character'),
     Stage        = require('./Stage'),
@@ -35,7 +36,11 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
    */
   init: function () {
 
-    var i;
+    var i,
+        /**
+         * ローダーを生成
+         */
+        loader = new PIXI.loaders.Loader();
 
     /**
      * キーの状態を保存
@@ -59,18 +64,39 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
     }.bind(this), false);
 
     /**
-     * ローダーを生成
-     */
-    var loader = new PIXI.loaders.Loader();
-
-    /**
      * 画像の読込後、ゲーム開始
      */
     loader
     .add('sprite', './_assets/img/sprite.json')
     .once('complete', function(){
 
-      this.startGame();
+      var debugContainer;
+      var sceneContainer;
+
+      /**
+       * ステージ生成、レイヤー追加
+       */
+      this.stage      = new Stage();
+      sceneContainer = this.stage.addContainer(sceneContainer);
+      debugContainer = this.stage.addContainer(debugContainer);
+
+      /**
+       * デバッグ追加
+       */
+      this.debug      = new Debug(debugContainer);
+
+      /**
+       * シーン追加
+       */
+      this.scene      = new Scene(sceneContainer);
+
+      /**
+       * キャラクター追加
+       */
+      this.character  = new Character(sceneContainer, 10, 6);
+
+      this.mainLoop();
+
 
     }.bind(this));
 
@@ -78,21 +104,6 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
      * 読み込む
      */
     loader.load();
-
-  },
-
-  /**
-   * ゲーム開始
-   */
-  startGame: function () {
-
-    new Stage();
-    new Debug();
-    new Scene();
-
-    this.character  = new Character();
-
-    this.mainLoop();
 
   },
 
@@ -104,6 +115,8 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
 
     var tick = function () {
       requestAnimationFrame(tick);
+
+      this.stage.rendering();
 
       if (this.keyStatus[Config.KEY_LEFT]) {
         this.character.move('left');

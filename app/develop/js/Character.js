@@ -1,6 +1,8 @@
 /**
  * @fileoverview Character
  * @constructor
+ * @params gridX [number]
+ * @params gridY [number]
  */
 
 
@@ -18,7 +20,18 @@ var Config = require('./Config');
 //   CONSTRUCTOR
 // ================
 
-var Character = function () {
+var Character = function (container, gridX, gridY) {
+
+  /**
+   * キャラクターのコンテナ
+   */
+  this._container = container;
+
+  /**
+   * キャラクター位置
+   */
+  this.gridX = gridX;
+  this.gridY = gridY;
 
   /**
    * キャラクターアニメーション要素の配列
@@ -87,17 +100,17 @@ Character.prototype._init = function () {
     this._elmCharacter.addChild(this._elmAnimationCharacter[i]);
   }
 
-
   /**
    * 初期方向を向く
    */
   this._elmAnimationCharacter[Character.DEFAULT_DIRECTION].visible = true;
 
-  this._elmCharacter.position.set(Config.WIDTH_HALF, Config.HEIGHT_HALF);
+  this._elmCharacter.position.set((this.gridX + 0.5) * Config.UNIT_SIZE, (this.gridY + 1) * Config.UNIT_SIZE);
 
-  Config.moveStage.addChild(this._elmCharacter);
+  this._container.addChild(this._elmCharacter);
 
 };
+
 
 /**
  * キャラクターの移動
@@ -120,17 +133,17 @@ Character.prototype.move = function (direction) {
    * 移動を制限
    */
   restrictMovement = function () {
-    if (this._elmCharacter.x - 40 <= 0) {
-      this._elmCharacter.x = 40;
-    } else if (this._elmCharacter.x + 40 >= Config.WIDTH) {
-      this._elmCharacter.x = Config.WIDTH - 40;
-    }
-
-    if (this._elmCharacter.y - 80 <= 0) {
-      this._elmCharacter.y = 80;
-    } else if (this._elmCharacter.y >= Config.HEIGHT) {
-      this._elmCharacter.y = Config.HEIGHT;
-    }
+//    if (this._elmCharacter.x - 40 <= 0) {
+//      this._elmCharacter.x = 40;
+//    } else if (this._elmCharacter.x + 40 >= Config.WIDTH) {
+//      this._elmCharacter.x = Config.WIDTH - 40;
+//    }
+//
+//    if (this._elmCharacter.y - 80 <= 0) {
+//      this._elmCharacter.y = 80;
+//    } else if (this._elmCharacter.y >= Config.HEIGHT) {
+//      this._elmCharacter.y = Config.HEIGHT;
+//    }
   }.bind(this);
 
   /**
@@ -164,7 +177,5 @@ Character.prototype.move = function (direction) {
     default:
       break;
   }
-
-  return 0;
 
 };

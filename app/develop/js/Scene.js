@@ -10,6 +10,7 @@
 // ================
 
 var Config = require('./Config'),
+    Unit   = require('./Unit'),
     Block  = require('./Block');
 
 
@@ -17,7 +18,11 @@ var Config = require('./Config'),
 //   CONSTRUCTOR
 // ================
 
-var Scene = function () {
+var Scene = function (container) {
+
+  this._container = container;
+  this._ttMapchip = [];
+  this.blocks = [];
 
   this._init.apply(this);
 
@@ -30,20 +35,7 @@ module.exports = Scene;
 //     CONSTANT
 // ================
 
-Scene.MAPCHIP_QTY     = 3; // マップチップ数
-Scene.MAP_DATA = [         // マップデータ
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1],
-  [1, 2, 1, 2, 1, 0, 1, 2, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-  [1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 1, 0, 1, 2, 1, 2, 1, 0, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1],
-  [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1],
-  [1, 0, 1, 2, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1],
-  [1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 1],
-  [1, 0, 1, 0, 1, 2, 1, 0, 1, 0, 0, 1, 0, 1, 2, 1, 0, 1, 2, 1],
-  [1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-];
+Scene.MAPCHIP_QTY     = 4; // マップチップ数
 
 
 // ================
@@ -56,30 +48,56 @@ Scene.MAP_DATA = [         // マップデータ
  */
 Scene.prototype._init = function () {
 
-  this._showGround();
+  var i;
+
+  for (i = 0; i < Scene.MAPCHIP_QTY; i++) {
+    this._ttMapchip.push(PIXI.Texture.fromFrame('map-' + i));
+  }
+
+  this._showMap();
+  this._showBlock();
 
 };
 
 /**
  * 地面を描画
- * @method _showGround
+ * @method _showMap
  */
-Scene.prototype._showGround = function () {
+Scene.prototype._showMap = function () {
 
   var i,
       j,
-      ttMapchip = [],
-      mapchips = [],
-      blocks = [];
-
-  for (i = 0; i < Scene.MAPCHIP_QTY; i++) {
-    ttMapchip.push(PIXI.Texture.fromFrame('map-' + i));
-  }
+      mapchips = [];
 
   for (i = 0; i < Config.HORIZONTAL_UNIT; i++) {
     for (j = 0; j < Config.VERTICAL_UNIT; j++) {
-      mapchips.push(new Block(i, j, ttMapchip[0]));
-      blocks.push(new Block(i, j, ttMapchip[Scene.MAP_DATA[j][i]]));
+      mapchips.push(new Unit(i, j, this._ttMapchip[0], this._container));
     }
   }
+}
+
+
+/**
+ * ブロックを描画
+ * @method _showBlock
+ */
+Scene.prototype._showBlock = function () {
+
+  var i,
+      j;
+
+  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
+    for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
+
+      if (Config.mapStatus[i][j] !== 0) {
+        this.blocks.push(new Block(j, i, this._ttMapchip[Config.mapStatus[i][j]], this._container));
+      }
+
+    }
+  }
+
+  setTimeout(function () {
+    this.blocks[122].destroy();
+  }.bind(this), 1000);
+
 }

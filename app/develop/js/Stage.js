@@ -44,50 +44,51 @@ Stage.STAGE_HTML_ID = 'stage';
  */
 Stage.prototype._init = function () {
 
-  this._generateStage();
-  this._rendering();
+  PIXI.utils.skipHello();
+
+  this._generateRoot();
 
 };
 
 /**
- * ステージの生成
- * @method _generateStage
+ * ルートコンテナの生成
+ * @method _generateRoot
  */
-Stage.prototype._generateStage = function () {
+Stage.prototype._generateRoot = function () {
 
-  PIXI.utils.skipHello();
-
-  Config.stage = new PIXI.Container();
-  this.renderer = PIXI.autoDetectRenderer(Config.WIDTH, Config.HEIGHT, {
+  this._rootContainer = new PIXI.Container();
+  this._renderer = PIXI.autoDetectRenderer(Config.WIDTH, Config.HEIGHT, {
     transparent: true,
     antialias:   true
   });
 
-  document.getElementById(Stage.STAGE_HTML_ID).appendChild(this.renderer.view);
+  this._rootContainer.position.set(-Config.UNIT_SIZE / 2);
 
-  this.renderer.render(Config.stage);
+  document.getElementById(Stage.STAGE_HTML_ID).appendChild(this._renderer.view);
 
-  Config.moveStage      = new PIXI.Container();
-  Config.mapStage      = new PIXI.Container();
-  Config.stage.addChild(
-    Config.mapStage,
-    Config.moveStage
-  );
+};
+
+
+/**
+ * コンテナの追加
+ * @method addContainer
+ */
+Stage.prototype.addContainer = function (container) {
+
+  container = new PIXI.Container();
+  this._rootContainer.addChild(container);
+
+  return container;
+
 };
 
 
 /**
  * レンダリング
- * @method _rendering
+ * @method rendering
  */
-Stage.prototype._rendering = function () {
-  var animation = function () {
+Stage.prototype.rendering = function () {
 
-    requestAnimationFrame(animation);
-    this.renderer.render(Config.stage);
-
-  }.bind(this);
-
-  animation();
+  this._renderer.render(this._rootContainer);
 
 };

@@ -16,7 +16,9 @@ var Config = require('./Config');
 //   CONSTRUCTOR
 // ================
 
-var Debug = function () {
+var Debug = function (container) {
+
+  this._container = container;
 
   this._init.apply(this);
 
@@ -69,6 +71,6 @@ Debug.prototype._showGrid = function () {
   }
 
   debugStage.alpha = 0.5;
-  Config.stage.addChild(debugStage);
+  this._container.addChild(debugStage);
 
 };
