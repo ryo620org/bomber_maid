@@ -13,7 +13,8 @@
 //     MODULE
 // ================
 
-var Config = require('./Config');
+var Config = require('./Config'),
+    Bomb   = require('./Bomb');
 
 
 // ================
@@ -32,6 +33,11 @@ var Character = function (container, gridX, gridY) {
    */
   this.gridX = gridX;
   this.gridY = gridY;
+
+  /**
+   * キャラクター向き
+   */
+  this.direction = 3;
 
   /**
    * キャラクターアニメーション要素の配列
@@ -56,7 +62,6 @@ module.exports = Character;
 
 Character.ANIMATION_FRAME     = 4; // 4フレーム
 Character.ANIMATION_DIRECTION = 4; // 4方向
-Character.DEFAULT_DIRECTION   = 3; // Left: 0, Up: 1, Right: 2, Down: 3
 
 
 // ================
@@ -75,7 +80,6 @@ Character.prototype._init = function () {
    */
   ttCharacter = [],
   i, j;
-
 
   /**
    * キャラクターアニメーション要素の生成
@@ -103,7 +107,7 @@ Character.prototype._init = function () {
   /**
    * 初期方向を向く
    */
-  this._elmAnimationCharacter[Character.DEFAULT_DIRECTION].visible = true;
+  this._elmAnimationCharacter[this.direction].visible = true;
 
   this._elmCharacter.position.set((this.gridX + 0.5) * Config.UNIT_SIZE, (this.gridY + 1) * Config.UNIT_SIZE);
 
@@ -127,23 +131,24 @@ Character.prototype.move = function (direction) {
     for (i = 0; i < Character.ANIMATION_DIRECTION; i++) {
       this._elmAnimationCharacter[i].visible = false;
     }
+    this._elmAnimationCharacter[this.direction].visible = true;
   }.bind(this),
 
   /**
    * 移動を制限
    */
   restrictMovement = function () {
-//    if (this._elmCharacter.x - 40 <= 0) {
-//      this._elmCharacter.x = 40;
-//    } else if (this._elmCharacter.x + 40 >= Config.WIDTH) {
-//      this._elmCharacter.x = Config.WIDTH - 40;
-//    }
-//
-//    if (this._elmCharacter.y - 80 <= 0) {
-//      this._elmCharacter.y = 80;
-//    } else if (this._elmCharacter.y >= Config.HEIGHT) {
-//      this._elmCharacter.y = Config.HEIGHT;
-//    }
+    if (this._elmCharacter.x - 40 <= 0) {
+      this._elmCharacter.x = 40;
+    } else if (this._elmCharacter.x + 40 >= Config.WIDTH) {
+      this._elmCharacter.x = Config.WIDTH - 40;
+    }
+
+    if (this._elmCharacter.y - 80 <= 0) {
+      this._elmCharacter.y = 80;
+    } else if (this._elmCharacter.y >= Config.HEIGHT) {
+      this._elmCharacter.y = Config.HEIGHT;
+    }
   }.bind(this);
 
   /**
@@ -151,31 +156,56 @@ Character.prototype.move = function (direction) {
    */
   switch (direction) {
     case 'left':
+      this.direction = 0;
       hideAnimation();
-      this._elmAnimationCharacter[0].visible = true;
-      this._elmCharacter.position.x -= 4;
+      this._elmCharacter.x -= 4;
       restrictMovement();
+      this.gridX = Math.floor(this._elmCharacter.x / Config.UNIT_SIZE);
       break;
     case 'up':
+      this.direction = 1;
       hideAnimation();
-      this._elmAnimationCharacter[1].visible = true;
-      this._elmCharacter.position.y -= 4;
+      this._elmCharacter.y -= 4;
       restrictMovement();
+      this.gridY = Math.floor(this._elmCharacter.y/ Config.UNIT_SIZE);
       break;
     case 'right':
+      this.direction = 2;
       hideAnimation();
-      this._elmAnimationCharacter[2].visible = true;
-      this._elmCharacter.position.x += 4;
+      this._elmCharacter.x += 4;
       restrictMovement();
+      this.gridX = Math.floor(this._elmCharacter.x / Config.UNIT_SIZE);
       break;
     case 'down':
+      this.direction = 3;
       hideAnimation();
-      this._elmAnimationCharacter[3].visible = true;
-      this._elmCharacter.position.y += 4;
+      this._elmCharacter.y += 4;
+      this.gridY = Math.floor(this._elmCharacter.y/ Config.UNIT_SIZE);
       restrictMovement();
       break;
     default:
       break;
+  }
+
+};
+
+
+/**
+ * 爆弾を置く
+ * @method bomb
+ */
+Character.prototype.bomb = function () {
+
+  if (Config.numOfBomb > 0) {
+
+    if (Config.blockStatus[this.gridY][this.gridX] === 0) {
+
+      Config.numOfBomb--;
+
+      var tt   = PIXI.Texture.fromFrame('bomb-0');
+      var bomb = new Bomb(this.gridX, this.gridY, tt, this._container);
+
+    }
   }
 
 };

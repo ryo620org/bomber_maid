@@ -97,7 +97,6 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
 
       this.mainLoop();
 
-
     }.bind(this));
 
     /**
@@ -130,10 +129,15 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
       if (this.keyStatus[Config.KEY_DOWN]) {
         this.character.move('down');
       }
+      if (this.keyStatus[Config.KEY_SPACE]) {
+        this.character.bomb();
+      }
     }.bind(this);
 
     tick();
   }
+
+
 };
 
 

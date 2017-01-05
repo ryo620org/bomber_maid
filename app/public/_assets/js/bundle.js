@@ -60,9 +60,9 @@
 	__webpack_require__(179);
 	var Config       = __webpack_require__(181),
 	    Character    = __webpack_require__(182),
-	    Stage        = __webpack_require__(183),
-	    Debug        = __webpack_require__(184),
-	    Scene        = __webpack_require__(185);
+	    Stage        = __webpack_require__(186),
+	    Debug        = __webpack_require__(187),
+	    Scene        = __webpack_require__(188);
 
 
 	/**
@@ -143,7 +143,6 @@
 
 	      this.mainLoop();
 
-
 	    }.bind(this));
 
 	    /**
@@ -176,10 +175,15 @@
 	      if (this.keyStatus[Config.KEY_DOWN]) {
 	        this.character.move('down');
 	      }
+	      if (this.keyStatus[Config.KEY_SPACE]) {
+	        this.character.bomb();
+	      }
 	    }.bind(this);
 
 	    tick();
 	  }
+
+
 	};
 
 
@@ -37553,6 +37557,7 @@
 	 * キーコード
 	 * @constant
 	 */
+	Config.KEY_SPACE = 32;
 	Config.KEY_LEFT  = 37;
 	Config.KEY_UP    = 38;
 	Config.KEY_RIGHT = 39;
@@ -37564,7 +37569,7 @@
 	 */
 	Config.KEY_QTY   = 256;
 
-	Config.mapStatus = [         // マップデータ
+	Config.blockStatus = [         // マップデータ
 	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	  [1, 1, 0, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1],
@@ -37573,12 +37578,17 @@
 	  [1, 1, 0, 1, 0, 1, 2, 1, 2, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 1],
 	  [1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 1],
 	  [1, 1, 0, 1, 2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 1],
-	  [1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 1, 1],
+	  [1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 1, 1],
 	  [1, 1, 0, 1, 0, 1, 2, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 2, 1, 1],
 	  [1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 1, 1],
 	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 	];
+
+	/**
+	 * 一度に置ける爆弾の数
+	 */
+	Config.numOfBomb = 3;
 
 /***/ },
 /* 182 */
@@ -37599,7 +37609,8 @@
 	//     MODULE
 	// ================
 
-	var Config = __webpack_require__(181);
+	var Config = __webpack_require__(181),
+	    Bomb   = __webpack_require__(183);
 
 
 	// ================
@@ -37618,6 +37629,11 @@
 	   */
 	  this.gridX = gridX;
 	  this.gridY = gridY;
+
+	  /**
+	   * キャラクター向き
+	   */
+	  this.direction = 3;
 
 	  /**
 	   * キャラクターアニメーション要素の配列
@@ -37642,7 +37658,6 @@
 
 	Character.ANIMATION_FRAME     = 4; // 4フレーム
 	Character.ANIMATION_DIRECTION = 4; // 4方向
-	Character.DEFAULT_DIRECTION   = 3; // Left: 0, Up: 1, Right: 2, Down: 3
 
 
 	// ================
@@ -37661,7 +37676,6 @@
 	   */
 	  ttCharacter = [],
 	  i, j;
-
 
 	  /**
 	   * キャラクターアニメーション要素の生成
@@ -37689,7 +37703,7 @@
 	  /**
 	   * 初期方向を向く
 	   */
-	  this._elmAnimationCharacter[Character.DEFAULT_DIRECTION].visible = true;
+	  this._elmAnimationCharacter[this.direction].visible = true;
 
 	  this._elmCharacter.position.set((this.gridX + 0.5) * Config.UNIT_SIZE, (this.gridY + 1) * Config.UNIT_SIZE);
 
@@ -37713,23 +37727,24 @@
 	    for (i = 0; i < Character.ANIMATION_DIRECTION; i++) {
 	      this._elmAnimationCharacter[i].visible = false;
 	    }
+	    this._elmAnimationCharacter[this.direction].visible = true;
 	  }.bind(this),
 
 	  /**
 	   * 移動を制限
 	   */
 	  restrictMovement = function () {
-	//    if (this._elmCharacter.x - 40 <= 0) {
-	//      this._elmCharacter.x = 40;
-	//    } else if (this._elmCharacter.x + 40 >= Config.WIDTH) {
-	//      this._elmCharacter.x = Config.WIDTH - 40;
-	//    }
-	//
-	//    if (this._elmCharacter.y - 80 <= 0) {
-	//      this._elmCharacter.y = 80;
-	//    } else if (this._elmCharacter.y >= Config.HEIGHT) {
-	//      this._elmCharacter.y = Config.HEIGHT;
-	//    }
+	    if (this._elmCharacter.x - 40 <= 0) {
+	      this._elmCharacter.x = 40;
+	    } else if (this._elmCharacter.x + 40 >= Config.WIDTH) {
+	      this._elmCharacter.x = Config.WIDTH - 40;
+	    }
+
+	    if (this._elmCharacter.y - 80 <= 0) {
+	      this._elmCharacter.y = 80;
+	    } else if (this._elmCharacter.y >= Config.HEIGHT) {
+	      this._elmCharacter.y = Config.HEIGHT;
+	    }
 	  }.bind(this);
 
 	  /**
@@ -37737,27 +37752,31 @@
 	   */
 	  switch (direction) {
 	    case 'left':
+	      this.direction = 0;
 	      hideAnimation();
-	      this._elmAnimationCharacter[0].visible = true;
-	      this._elmCharacter.position.x -= 4;
+	      this._elmCharacter.x -= 4;
 	      restrictMovement();
+	      this.gridX = Math.floor(this._elmCharacter.x / Config.UNIT_SIZE);
 	      break;
 	    case 'up':
+	      this.direction = 1;
 	      hideAnimation();
-	      this._elmAnimationCharacter[1].visible = true;
-	      this._elmCharacter.position.y -= 4;
+	      this._elmCharacter.y -= 4;
 	      restrictMovement();
+	      this.gridY = Math.floor(this._elmCharacter.y/ Config.UNIT_SIZE);
 	      break;
 	    case 'right':
+	      this.direction = 2;
 	      hideAnimation();
-	      this._elmAnimationCharacter[2].visible = true;
-	      this._elmCharacter.position.x += 4;
+	      this._elmCharacter.x += 4;
 	      restrictMovement();
+	      this.gridX = Math.floor(this._elmCharacter.x / Config.UNIT_SIZE);
 	      break;
 	    case 'down':
+	      this.direction = 3;
 	      hideAnimation();
-	      this._elmAnimationCharacter[3].visible = true;
-	      this._elmCharacter.position.y += 4;
+	      this._elmCharacter.y += 4;
+	      this.gridY = Math.floor(this._elmCharacter.y/ Config.UNIT_SIZE);
 	      restrictMovement();
 	      break;
 	    default:
@@ -37766,8 +37785,354 @@
 
 	};
 
+
+	/**
+	 * 爆弾を置く
+	 * @method bomb
+	 */
+	Character.prototype.bomb = function () {
+
+	  if (Config.numOfBomb > 0) {
+
+	    if (Config.blockStatus[this.gridY][this.gridX] === 0) {
+
+	      Config.numOfBomb--;
+
+	      var tt   = PIXI.Texture.fromFrame('bomb-0');
+	      var bomb = new Bomb(this.gridX, this.gridY, tt, this._container);
+
+	    }
+	  }
+
+	};
+
 /***/ },
 /* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @fileoverview Bomb
+	 * @constructor
+	 */
+
+	'use strict';
+
+	// ================
+	//     MODULE
+	// ================
+
+	var Config = __webpack_require__(181),
+	    Block   = __webpack_require__(184);
+
+
+	// ================
+	//   CONSTRUCTOR
+	// ================
+
+	var Bomb = function () {
+
+	  Block.apply(this, arguments);
+
+	  this.strength = 4;
+	  this._bombAnimation();
+
+	};
+
+	module.exports = Bomb;
+
+	Bomb.prototype = Object.create(Block.prototype);
+	Bomb.prototype.constructor = Bomb;
+
+
+	// ================
+	//     CONSTANT
+	// ================
+
+	Bomb.DURATION = 3000;
+
+
+	// ================
+	//      METHOD
+	// ================
+
+	/**
+	 * アニメーション
+	 * @method _bombAnimation
+	 */
+	Bomb.prototype._bombAnimation = function () {
+
+	  this._tween = TweenMax.to(this.elm.scale, .5, {
+	    x: 0.9,
+	    y: 0.9,
+	    repeat: -1,
+	    yoyo: true,
+	    ease: SteppedEase.config(1)
+	  });
+
+	  setTimeout(function () {
+	    this._explosion();
+	    Config.blockStatus[this.gridY][this.gridX] = 0;
+	  }.bind(this), Bomb.DURATION);
+
+	};
+
+
+	/**
+	 * 爆発
+	 * @method _explosion
+	 */
+	Bomb.prototype._explosion = function () {
+
+	  var FLAG_CONTINUE = 1, // 爆風が続くかどうか
+	      FLAG_DESTROY  = 2, // 爆風で破壊するかどうか
+	      flags,
+	      blasts = [], // 爆風ユニット
+	      i,
+	      j,
+	      tt = PIXI.Texture.fromFrame('explosion-0'),
+	      explosionContainer = new PIXI.Container(),
+	      /**
+	       * 座標のブロックの状態をチェック
+	       * @function checkUnit
+	       */
+	      checkUnit = function (x, y) {
+
+	        var mask = 0;
+
+	        if (0 <= x && x < Config.HORIZONTAL_UNIT &&
+	            0 <= y && y < Config.VERTICAL_UNIT) {
+	          if (Config.blockStatus[y][x] === 0) {
+	            mask |= FLAG_CONTINUE;
+	            return mask;
+	          } else  if (Config.blockStatus[y][x].isDestructible) {
+	            mask |= FLAG_DESTROY;
+	            return mask;
+	          }
+	        }
+
+	        return mask;
+
+	      };
+
+	  Config.numOfBomb++;
+
+	  this._tween.pause();
+	  this.elm.tint = 0xff7e1f;
+
+	  TweenMax.to(this.elm, .8, {
+	    alpha: 0,
+	    onComplete: function () {
+	      this.elm.destroy();
+	    }.bind(this)
+	  });
+
+	  /**
+	   * 上下左右に爆風を伸ばす
+	   */
+	  for (i = 0; i < 4; i++) {
+
+	    blasts[i] = [];
+
+	    for (j = 1; j <= this.strength; j++) {
+
+	      var x = i === 0 ? this.gridX - j:
+	              i === 1 ? this.gridX:
+	              i === 2 ? this.gridX + j:
+	              i === 3 ? this.gridX:
+	              0;
+
+	      var y = i === 0 ? this.gridY:
+	              i === 1 ? this.gridY - j:
+	              i === 2 ? this.gridY:
+	              i === 3 ? this.gridY + j:
+	              0;
+
+	      blasts[i][j] = 0;
+
+	      flags = checkUnit(x, y);
+	      console.log(flags);
+	      if ((flags & FLAG_DESTROY) != 0) {
+	        Config.blockStatus[y][x].vanish();
+	      }
+
+	      if ((flags & FLAG_CONTINUE) != 0) {
+
+	        blasts[i][j] = new Block(x, y, tt, explosionContainer);
+	        blasts[i][j].vanish(500);
+
+	      } else {
+
+	        break;
+
+	      }
+
+	    }
+	  }
+
+	  /**
+	   * 爆風スプライトを一定時間後に消去
+	   */
+	  this._container.addChild(explosionContainer);
+
+
+	};
+
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @fileoverview Block
+	 * @constructor
+	 */
+
+	'use strict';
+
+	// ================
+	//     MODULE
+	// ================
+
+	var Config = __webpack_require__(181),
+	    Unit   = __webpack_require__(185);
+
+
+	// ================
+	//   CONSTRUCTOR
+	// ================
+
+	var Block = function () {
+
+	  Unit.apply(this, arguments);
+
+	  this.isDestructible = false;
+	  this._setStatus();
+
+	};
+
+	module.exports = Block;
+
+	Block.prototype = Object.create(Unit.prototype);
+	Block.prototype.constructor = Block;
+
+
+	/**
+	 * ステータス設定
+	 * @method _setStatus
+	 */
+	Block.prototype._setStatus = function () {
+
+	  if (Config.blockStatus[this.gridY][this.gridX] === 2) {
+	    this.isDestructible = true;
+	  }
+
+	  Config.blockStatus[this.gridY][this.gridX] = this;
+
+	};
+
+
+	/**
+	 * ブロックの破壊
+	 * @method vanish
+	 */
+	Block.prototype.vanish = function (delay) {
+
+	  var delay = delay || 0;
+
+	  setTimeout(function () {
+	    this.elm.tint = 0xff7e1f;
+
+	    TweenMax.to(this.elm, .8, {
+	      alpha: 0,
+	      onComplete: function () {
+
+	        this.elm.destroy();
+	        Config.blockStatus[this.gridY][this.gridX] = 0;
+
+	      }.bind(this)
+	    });
+
+	  }.bind(this), delay);
+
+	};
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @fileoverview Unit
+	 * @constructor
+	 * @param gridX {Number}
+	 * @param gridY {Number}
+	 * @param texture {Object}
+	 * @param container {Object}
+	 */
+
+	'use strict';
+
+	// ================
+	//     MODULE
+	// ================
+
+	var Config = __webpack_require__(181);
+
+
+	// ================
+	//   CONSTRUCTOR
+	// ================
+
+	var Unit = function (gridX, gridY, texture, container) {
+
+	  this.gridX      = gridX;
+	  this.gridY      = gridY;
+
+	  this._texture   = texture;
+	  this._container = container;
+
+	  this._init.apply(this);
+
+	};
+
+	module.exports = Unit;
+
+
+	// ================
+	//     CONSTANT
+	// ================
+
+
+	// ================
+	//      METHOD
+	// ================
+
+	/**
+	 * 初期化
+	 * @method _init
+	 */
+	Unit.prototype._init = function () {
+
+	  this.elm = new PIXI.Sprite(this._texture);
+
+	  this.elm.anchor.set(0.5, 1);
+	  this.elm.position.set(Config.UNIT_SIZE * this.gridX + Config.UNIT_SIZE / 2, Config.UNIT_SIZE * (this.gridY + 1))
+	  this._container.addChild(this.elm);
+
+	};
+
+
+	/**
+	 * テクスチャのセット
+	 * @method setTexture
+	 */
+	Unit.prototype.setTexture = function (texture) {
+
+	  this.elm.texture = texture;
+
+	};
+
+/***/ },
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37866,7 +38231,7 @@
 	};
 
 /***/ },
-/* 184 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37948,7 +38313,7 @@
 
 
 /***/ },
-/* 185 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37963,8 +38328,8 @@
 	// ================
 
 	var Config = __webpack_require__(181),
-	    Unit   = __webpack_require__(186),
-	    Block  = __webpack_require__(187);
+	    Unit   = __webpack_require__(185),
+	    Block  = __webpack_require__(184);
 
 
 	// ================
@@ -38042,145 +38407,15 @@
 	  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
 	    for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
 
-	      if (Config.mapStatus[i][j] !== 0) {
-	        this.blocks.push(new Block(j, i, this._ttMapchip[Config.mapStatus[i][j]], this._container));
+	      if (Config.blockStatus[i][j] !== 0) {
+	        var tmp = new Block(j, i, this._ttMapchip[Config.blockStatus[i][j]], this._container);
+	        Config.blockStatus[i][j] = tmp;
 	      }
 
 	    }
 	  }
 
-	  setTimeout(function () {
-	    this.blocks[122].destroy();
-	  }.bind(this), 1000);
-
 	}
-
-/***/ },
-/* 186 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @fileoverview Unit
-	 * @constructor
-	 * @param gridX {Number}
-	 * @param gridY {Number}
-	 * @param texture {Object}
-	 */
-
-	'use strict';
-
-	// ================
-	//     MODULE
-	// ================
-
-	var Config = __webpack_require__(181);
-
-
-	// ================
-	//   CONSTRUCTOR
-	// ================
-
-	var Unit = function (gridX, gridY, texture, container) {
-
-	  this._container = container;
-	  this.gridX      = gridX;
-	  this.gridY      = gridY;
-	  this._texture   = texture;
-
-	  this._init.apply(this);
-
-	};
-
-	module.exports = Unit;
-
-
-	// ================
-	//     CONSTANT
-	// ================
-
-
-	// ================
-	//      METHOD
-	// ================
-
-	/**
-	 * 初期化
-	 * @method _init
-	 */
-	Unit.prototype._init = function () {
-
-	  this.elm = new PIXI.Sprite(this._texture);
-
-	  this.elm.anchor.set(0.5, 1);
-	  this.elm.position.set(Config.UNIT_SIZE * this.gridX + Config.UNIT_SIZE / 2, Config.UNIT_SIZE * (this.gridY + 1))
-	  this._container.addChild(this.elm);
-
-	};
-
-
-	/**
-	 * テクスチャのセット
-	 * @method setTexture
-	 */
-	Unit.prototype.setTexture = function (texture) {
-
-	  this.elm.texture = texture;
-
-	};
-
-/***/ },
-/* 187 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @fileoverview Block
-	 * @constructor
-	 */
-
-	'use strict';
-
-	// ================
-	//     MODULE
-	// ================
-
-	var Config = __webpack_require__(181),
-	    Unit   = __webpack_require__(186);
-
-
-	// ================
-	//   CONSTRUCTOR
-	// ================
-
-	var Block = function () {
-
-	  Unit.apply(this, arguments);
-
-	};
-
-	module.exports = Block;
-
-	Block.prototype = Object.create(Unit.prototype);
-	Block.prototype.constructor = Block;
-
-
-	/**
-	 * ブロックの破壊
-	 * @method setTexture
-	 */
-	Block.prototype.destroy = function () {
-
-	  this.elm.tint = 0xff7e1f;
-	  Config.mapStatus[this.gridY][this.gridX] = 0;
-
-	  TweenMax.to(this.elm, .8, {
-	    alpha: 0,
-	    onComplete: function () {
-	      this.elm.destroy();
-	    }.bind(this)
-	  });
-
-	};
-
 
 /***/ }
 /******/ ]);

@@ -21,6 +21,9 @@ var Block = function () {
 
   Unit.apply(this, arguments);
 
+  this.isDestructible = false;
+  this._setStatus();
+
 };
 
 module.exports = Block;
@@ -30,19 +33,41 @@ Block.prototype.constructor = Block;
 
 
 /**
- * ブロックの破壊
- * @method setTexture
+ * ステータス設定
+ * @method _setStatus
  */
-Block.prototype.destroy = function () {
+Block.prototype._setStatus = function () {
 
-  this.elm.tint = 0xff7e1f;
-  Config.mapStatus[this.gridY][this.gridX] = 0;
+  if (Config.blockStatus[this.gridY][this.gridX] === 2) {
+    this.isDestructible = true;
+  }
 
-  TweenMax.to(this.elm, .8, {
-    alpha: 0,
-    onComplete: function () {
-      this.elm.destroy();
-    }.bind(this)
-  });
+  Config.blockStatus[this.gridY][this.gridX] = this;
+
+};
+
+
+/**
+ * ブロックの破壊
+ * @method vanish
+ */
+Block.prototype.vanish = function (delay) {
+
+  var delay = delay || 0;
+
+  setTimeout(function () {
+    this.elm.tint = 0xff7e1f;
+
+    TweenMax.to(this.elm, .8, {
+      alpha: 0,
+      onComplete: function () {
+
+        this.elm.destroy();
+        Config.blockStatus[this.gridY][this.gridX] = 0;
+
+      }.bind(this)
+    });
+
+  }.bind(this), delay);
 
 };

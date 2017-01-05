@@ -89,15 +89,12 @@ Scene.prototype._showBlock = function () {
   for (i = 0; i < Config.VERTICAL_UNIT; i++) {
     for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
 
-      if (Config.mapStatus[i][j] !== 0) {
-        this.blocks.push(new Block(j, i, this._ttMapchip[Config.mapStatus[i][j]], this._container));
+      if (Config.blockStatus[i][j] !== 0) {
+        var tmp = new Block(j, i, this._ttMapchip[Config.blockStatus[i][j]], this._container);
+        Config.blockStatus[i][j] = tmp;
       }
 
     }
   }
-
-  setTimeout(function () {
-    this.blocks[122].destroy();
-  }.bind(this), 1000);
 
 }

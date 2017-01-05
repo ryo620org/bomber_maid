@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="./_assets/css/bundle.css">
   </head>
   <body>
-    <h1>pixi-game</h1>
+    <h1>BOMBER MAID</h1>
     <div class="stage" id="stage"></div>
     <script src="./_assets/js/bundle.js"></script>
   </body>

@@ -4,6 +4,7 @@
  * @param gridX {Number}
  * @param gridY {Number}
  * @param texture {Object}
+ * @param container {Object}
  */
 
 'use strict';
@@ -21,10 +22,11 @@ var Config = require('./Config');
 
 var Unit = function (gridX, gridY, texture, container) {
 
-  this._container = container;
   this.gridX      = gridX;
   this.gridY      = gridY;
+
   this._texture   = texture;
+  this._container = container;
 
   this._init.apply(this);
 
