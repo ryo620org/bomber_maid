@@ -198,7 +198,7 @@ Character.prototype.bomb = function () {
 
   if (Config.numOfBomb > 0) {
 
-    if (Config.blockStatus[this.gridY][this.gridX] === 0) {
+    if (Config.blockStatus[this.gridY][this.gridX] <= 0) {
 
       Config.numOfBomb--;
 

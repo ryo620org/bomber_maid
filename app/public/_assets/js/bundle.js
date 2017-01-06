@@ -37569,20 +37569,51 @@
 	 */
 	Config.KEY_QTY   = 256;
 
-	Config.blockStatus = [         // マップデータ
-	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	  [1, 1, 0, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1],
-	  [1, 1, 2, 1, 2, 1, 0, 1, 2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1],
-	  [1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-	  [1, 1, 0, 1, 0, 1, 2, 1, 2, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 1],
-	  [1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 1],
-	  [1, 1, 0, 1, 2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 1],
-	  [1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 1, 1],
-	  [1, 1, 0, 1, 0, 1, 2, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 2, 1, 1],
-	  [1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 1, 1],
-	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+	/**
+	 * チップの種類数
+	 * @constant
+	 */
+	Config.NUMBER_OF_BASECHIP  = 13;
+	Config.NUMBER_OF_BLOCKCHIP = 8;
+
+	/**
+	 * ベースのマップ
+	 * @constant
+	 */
+	Config.baseStatus = [
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
+	  [0, 3, 7, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 6, 8, 0],
+	  [0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0],
+	  [0, 6, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,11,12,10, 0],
+	  [0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	];
+
+	/**
+	 * ブロックのマップ
+	 * @constant
+	 */
+	Config.blockStatus = [
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4, 0, 0, 0],
+	  [0, 0, 1, 1,-1,-1, 1,-1, 1,-1,-1, 1, 1,-1,-1,-1,-1, 1, 1, 0, 0],
+	  [0, 5, 1, 0, 1, 0,-1, 0, 1, 0, 1, 0, 1, 0,-1, 0, 1, 0,-1, 5, 0],
+	  [0, 6, 1, 1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1, 1,-1, 1,-1,-1, 6, 0],
+	  [0, 7,-1, 0,-1, 0, 1, 0, 1, 0,-1, 0,-1, 0,-1, 0, 1, 0, 1, 7, 0],
+	  [0,-1, 1, 1, 1,-1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1, 1, 1,-1,-1, 0],
+	  [0, 5,-1, 0, 1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0, 1, 0,-1, 5, 0],
+	  [0, 6, 1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1, 1, 6, 0],
+	  [0, 7,-1, 0,-1, 0, 1, 0, 1, 0,-1, 0,-1, 0, 1, 0,-1, 0, 1, 7, 0],
+	  [0, 0,-1,-1, 1,-1, 1,-1, 1, 1,-1,-1,-1,-1,-1, 1,-1, 1, 1, 0, 0],
+	  [0, 0, 0, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	];
 
 	/**
@@ -37794,7 +37825,7 @@
 
 	  if (Config.numOfBomb > 0) {
 
-	    if (Config.blockStatus[this.gridY][this.gridX] === 0) {
+	    if (Config.blockStatus[this.gridY][this.gridX] <= 0) {
 
 	      Config.numOfBomb--;
 
@@ -37901,7 +37932,7 @@
 
 	        if (0 <= x && x < Config.HORIZONTAL_UNIT &&
 	            0 <= y && y < Config.VERTICAL_UNIT) {
-	          if (Config.blockStatus[y][x] === 0) {
+	          if (Config.blockStatus[y][x] <= 0) {
 	            mask |= FLAG_CONTINUE;
 	            return mask;
 	          } else  if (Config.blockStatus[y][x].isDestructible) {
@@ -38022,7 +38053,7 @@
 	 */
 	Block.prototype._setStatus = function () {
 
-	  if (Config.blockStatus[this.gridY][this.gridX] === 2) {
+	  if (Config.blockStatus[this.gridY][this.gridX] === 1) {
 	    this.isDestructible = true;
 	  }
 
@@ -38047,7 +38078,7 @@
 	      onComplete: function () {
 
 	        this.elm.destroy();
-	        Config.blockStatus[this.gridY][this.gridX] = 0;
+	        Config.blockStatus[this.gridY][this.gridX] = -1;
 
 	      }.bind(this)
 	    });
@@ -38339,7 +38370,8 @@
 	var Scene = function (container) {
 
 	  this._container = container;
-	  this._ttMapchip = [];
+	  this._ttBase = [];
+	  this._ttBlock = [];
 	  this.blocks = [];
 
 	  this._init.apply(this);
@@ -38352,8 +38384,6 @@
 	// ================
 	//     CONSTANT
 	// ================
-
-	Scene.MAPCHIP_QTY     = 4; // マップチップ数
 
 
 	// ================
@@ -38368,8 +38398,12 @@
 
 	  var i;
 
-	  for (i = 0; i < Scene.MAPCHIP_QTY; i++) {
-	    this._ttMapchip.push(PIXI.Texture.fromFrame('map-' + i));
+	  for (i = 0; i < Config.NUMBER_OF_BASECHIP; i++) {
+	    this._ttBase.push(PIXI.Texture.fromFrame('base-' + i));
+	  }
+
+	  for (i = 0; i < Config.NUMBER_OF_BLOCKCHIP; i++) {
+	    this._ttBlock.push(PIXI.Texture.fromFrame('block-' + i));
 	  }
 
 	  this._showMap();
@@ -38384,12 +38418,15 @@
 	Scene.prototype._showMap = function () {
 
 	  var i,
-	      j,
-	      mapchips = [];
+	      j;
 
-	  for (i = 0; i < Config.HORIZONTAL_UNIT; i++) {
-	    for (j = 0; j < Config.VERTICAL_UNIT; j++) {
-	      mapchips.push(new Unit(i, j, this._ttMapchip[0], this._container));
+	  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
+
+	    for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
+
+	      var tmp = new Unit(j, i, this._ttBase[Config.baseStatus[i][j]], this._container);
+	      Config.baseStatus[i][j] = tmp;
+
 	    }
 	  }
 	}
@@ -38405,10 +38442,11 @@
 	      j;
 
 	  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
+
 	    for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
 
-	      if (Config.blockStatus[i][j] !== 0) {
-	        var tmp = new Block(j, i, this._ttMapchip[Config.blockStatus[i][j]], this._container);
+	      if (Config.blockStatus[i][j] >= 0) {
+	        var tmp = new Block(j, i, this._ttBlock[Config.blockStatus[i][j]], this._container);
 	        Config.blockStatus[i][j] = tmp;
 	      }
 

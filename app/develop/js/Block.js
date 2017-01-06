@@ -38,7 +38,7 @@ Block.prototype.constructor = Block;
  */
 Block.prototype._setStatus = function () {
 
-  if (Config.blockStatus[this.gridY][this.gridX] === 2) {
+  if (Config.blockStatus[this.gridY][this.gridX] === 1) {
     this.isDestructible = true;
   }
 
@@ -63,7 +63,7 @@ Block.prototype.vanish = function (delay) {
       onComplete: function () {
 
         this.elm.destroy();
-        Config.blockStatus[this.gridY][this.gridX] = 0;
+        Config.blockStatus[this.gridY][this.gridX] = -1;
 
       }.bind(this)
     });

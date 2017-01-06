@@ -21,7 +21,8 @@ var Config = require('./Config'),
 var Scene = function (container) {
 
   this._container = container;
-  this._ttMapchip = [];
+  this._ttBase = [];
+  this._ttBlock = [];
   this.blocks = [];
 
   this._init.apply(this);
@@ -34,8 +35,6 @@ module.exports = Scene;
 // ================
 //     CONSTANT
 // ================
-
-Scene.MAPCHIP_QTY     = 4; // マップチップ数
 
 
 // ================
@@ -50,8 +49,12 @@ Scene.prototype._init = function () {
 
   var i;
 
-  for (i = 0; i < Scene.MAPCHIP_QTY; i++) {
-    this._ttMapchip.push(PIXI.Texture.fromFrame('map-' + i));
+  for (i = 0; i < Config.NUMBER_OF_BASECHIP; i++) {
+    this._ttBase.push(PIXI.Texture.fromFrame('base-' + i));
+  }
+
+  for (i = 0; i < Config.NUMBER_OF_BLOCKCHIP; i++) {
+    this._ttBlock.push(PIXI.Texture.fromFrame('block-' + i));
   }
 
   this._showMap();
@@ -66,12 +69,15 @@ Scene.prototype._init = function () {
 Scene.prototype._showMap = function () {
 
   var i,
-      j,
-      mapchips = [];
+      j;
 
-  for (i = 0; i < Config.HORIZONTAL_UNIT; i++) {
-    for (j = 0; j < Config.VERTICAL_UNIT; j++) {
-      mapchips.push(new Unit(i, j, this._ttMapchip[0], this._container));
+  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
+
+    for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
+
+      var tmp = new Unit(j, i, this._ttBase[Config.baseStatus[i][j]], this._container);
+      Config.baseStatus[i][j] = tmp;
+
     }
   }
 }
@@ -87,10 +93,11 @@ Scene.prototype._showBlock = function () {
       j;
 
   for (i = 0; i < Config.VERTICAL_UNIT; i++) {
+
     for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
 
-      if (Config.blockStatus[i][j] !== 0) {
-        var tmp = new Block(j, i, this._ttMapchip[Config.blockStatus[i][j]], this._container);
+      if (Config.blockStatus[i][j] >= 0) {
+        var tmp = new Block(j, i, this._ttBlock[Config.blockStatus[i][j]], this._container);
         Config.blockStatus[i][j] = tmp;
       }
 

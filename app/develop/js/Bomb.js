@@ -89,7 +89,7 @@ Bomb.prototype._explosion = function () {
 
         if (0 <= x && x < Config.HORIZONTAL_UNIT &&
             0 <= y && y < Config.VERTICAL_UNIT) {
-          if (Config.blockStatus[y][x] === 0) {
+          if (Config.blockStatus[y][x] <= 0) {
             mask |= FLAG_CONTINUE;
             return mask;
           } else  if (Config.blockStatus[y][x].isDestructible) {
