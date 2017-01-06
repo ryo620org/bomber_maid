@@ -22,6 +22,7 @@ var Bomb = function () {
   Block.apply(this, arguments);
 
   this.strength = 4;
+  this.isExploded = false;
   this._bombAnimation();
 
 };
@@ -58,8 +59,7 @@ Bomb.prototype._bombAnimation = function () {
   });
 
   setTimeout(function () {
-    this._explosion();
-    Config.blockStatus[this.gridY][this.gridX] = 0;
+    this.explosion();
   }.bind(this), Bomb.DURATION);
 
 };
@@ -67,9 +67,9 @@ Bomb.prototype._bombAnimation = function () {
 
 /**
  * 爆発
- * @method _explosion
+ * @method explosion
  */
-Bomb.prototype._explosion = function () {
+Bomb.prototype.explosion = function () {
 
   var FLAG_CONTINUE = 1, // 爆風が続くかどうか
       FLAG_DESTROY  = 2, // 爆風で破壊するかどうか
@@ -80,7 +80,7 @@ Bomb.prototype._explosion = function () {
       tt = PIXI.Texture.fromFrame('explosion-0'),
       explosionContainer = new PIXI.Container(),
       /**
-       * 座標のブロックの状態をチェック
+       * 任意のグリッド上の状態をチェック
        * @function checkUnit
        */
       checkUnit = function (x, y) {
@@ -89,30 +89,37 @@ Bomb.prototype._explosion = function () {
 
         if (0 <= x && x < Config.HORIZONTAL_UNIT &&
             0 <= y && y < Config.VERTICAL_UNIT) {
-          if (Config.blockStatus[y][x] <= 0) {
+          if (Config.blockStatus[y][x] === -1) {
             mask |= FLAG_CONTINUE;
             return mask;
           } else  if (Config.blockStatus[y][x].isDestructible) {
             mask |= FLAG_DESTROY;
             return mask;
+          } else if (Config.blockStatus[y][x].constructor === Bomb) {
+            /**
+             * 爆風上に爆弾がある場合、爆発させる
+             */
+            Config.blockStatus[y][x].explosion();
           }
         }
 
         return mask;
 
       };
+  /**
+   * 爆発してない場合のみ爆発させる
+   */
+  if (this.isExploded) {
+    return 0;
+  } else {
+    this.isExploded = true;
+  }
 
   Config.numOfBomb++;
+  Config.blockStatus[this.gridY][this.gridX] = 0;
 
   this._tween.pause();
-  this.elm.tint = 0xff7e1f;
-
-  TweenMax.to(this.elm, .8, {
-    alpha: 0,
-    onComplete: function () {
-      this.elm.destroy();
-    }.bind(this)
-  });
+  this.vanish();
 
   /**
    * 上下左右に爆風を伸ばす
@@ -138,7 +145,7 @@ Bomb.prototype._explosion = function () {
       blasts[i][j] = 0;
 
       flags = checkUnit(x, y);
-      console.log(flags);
+
       if ((flags & FLAG_DESTROY) != 0) {
         Config.blockStatus[y][x].vanish();
       }

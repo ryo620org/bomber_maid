@@ -76,24 +76,24 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
       /**
        * ステージ生成、レイヤー追加
        */
-      this.stage      = new Stage();
+      this.stage     = new Stage();
       sceneContainer = this.stage.addContainer(sceneContainer);
       debugContainer = this.stage.addContainer(debugContainer);
 
       /**
        * デバッグ追加
        */
-      this.debug      = new Debug(debugContainer);
+      this.debug     = new Debug(debugContainer);
 
       /**
        * シーン追加
        */
-      this.scene      = new Scene(sceneContainer);
+      this.scene     = new Scene(sceneContainer);
 
       /**
        * キャラクター追加
        */
-      this.character  = new Character(sceneContainer, 10, 6);
+      this.character = new Character(sceneContainer, 10, 6);
 
       this.mainLoop();
 
