@@ -11,6 +11,7 @@ var Config = require('./Config');
 
 module.exports = Config;
 
+
 /**
  * 色の管理
  */
@@ -37,6 +38,12 @@ Config.HEIGHT_HALF = 768 / 2;
  * @constant
  */
 Config.UNIT_SIZE = 64;
+
+/**
+ * キャラクターサイズ
+ * @constant
+ */
+Config.CHARACTER_SIZE = 80;
 
 /**
  * ブロック数
@@ -107,8 +114,3 @@ Config.blockStatus = [
   [0, 0, 0, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
-
-/**
- * 一度に置ける爆弾の数
- */
-Config.numOfBomb = 3;

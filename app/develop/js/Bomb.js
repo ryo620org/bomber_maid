@@ -89,6 +89,14 @@ Bomb.prototype.explosion = function () {
 
         if (0 <= x && x < Config.HORIZONTAL_UNIT &&
             0 <= y && y < Config.VERTICAL_UNIT) {
+
+          if (Config.character.gridX === x && Config.character.gridY === y) {
+            /**
+             * 爆風上にキャラクターがいる場合ミス
+             */
+            Config.character.miss();
+          }
+
           if (Config.blockStatus[y][x] === -1) {
             mask |= FLAG_CONTINUE;
             return mask;
@@ -115,7 +123,7 @@ Bomb.prototype.explosion = function () {
     this.isExploded = true;
   }
 
-  Config.numOfBomb++;
+  Config.character.numOfBomb++;
   Config.blockStatus[this.gridY][this.gridX] = 0;
 
   this._tween.pause();
@@ -168,6 +176,5 @@ Bomb.prototype.explosion = function () {
    * 爆風スプライトを一定時間後に消去
    */
   this._container.addChild(explosionContainer);
-
 
 };

@@ -35,6 +35,11 @@ var Character = function (container, gridX, gridY) {
   this.gridY = gridY;
 
   /**
+   * キャラクターのコンテナ
+   */
+  this.numOfBomb = Character.INITIAL_BOMBS;
+
+  /**
    * キャラクター向き
    */
   this.direction = 3;
@@ -47,10 +52,10 @@ var Character = function (container, gridX, gridY) {
   /**
    * キャラクター要素
    */
-  this._elmCharacter = new PIXI.Container();
+  this.elm = new PIXI.Container();
 
   this._init.apply(this);
-
+  this.debugInit();
 };
 
 module.exports = Character;
@@ -62,7 +67,8 @@ module.exports = Character;
 
 Character.ANIMATION_FRAME     = 4; // 4フレーム
 Character.ANIMATION_DIRECTION = 4; // 4方向
-
+Character.SPRITE_OFFSET_Y     = 8; // グリッド上でのオフセット値
+Character.INITIAL_BOMBS       = 3; // 初期爆弾数
 
 // ================
 //      METHOD
@@ -74,12 +80,11 @@ Character.ANIMATION_DIRECTION = 4; // 4方向
  */
 Character.prototype._init = function () {
 
-  var
-  /**
-   * テクスチャの配列（Left: 0, Back: 1, Right: 2, Front: 3）
-   */
-  ttCharacter = [],
-  i, j;
+  var i, j,
+      /**
+       * テクスチャの配列（Left: 0, Back: 1, Right: 2, Front: 3）
+       */
+      ttCharacter = [];
 
   /**
    * キャラクターアニメーション要素の生成
@@ -100,18 +105,21 @@ Character.prototype._init = function () {
     this._elmAnimationCharacter[i].play();
     this._elmAnimationCharacter[i].animationSpeed = 0.1;
     this._elmAnimationCharacter[i].anchor.set(0.5, 1);
+    this._elmAnimationCharacter[i].position.y = -Character.SPRITE_OFFSET_Y;
     this._elmAnimationCharacter[i].visible = false;
-    this._elmCharacter.addChild(this._elmAnimationCharacter[i]);
+    this.elm.addChild(this._elmAnimationCharacter[i]);
   }
+
+  this.elm.displayGroup = Config.fieldLayer;
 
   /**
    * 初期方向を向く
    */
   this._elmAnimationCharacter[this.direction].visible = true;
 
-  this._elmCharacter.position.set((this.gridX + 0.5) * Config.UNIT_SIZE, (this.gridY + 1) * Config.UNIT_SIZE);
+  this.elm.position.set((this.gridX + 0.5) * Config.UNIT_SIZE, (this.gridY + 1) * Config.UNIT_SIZE);
 
-  this._container.addChild(this._elmCharacter);
+  this._container.addChild(this.elm);
 
 };
 
@@ -127,29 +135,29 @@ Character.prototype.move = function (direction) {
   /**
    * 全てのアニメーションを非表示
    */
-  hideAnimation = function () {
+  changeOfDirection = function () {
     for (i = 0; i < Character.ANIMATION_DIRECTION; i++) {
       this._elmAnimationCharacter[i].visible = false;
     }
     this._elmAnimationCharacter[this.direction].visible = true;
-  }.bind(this),
-
-  /**
-   * 移動を制限
-   */
-  restrictMovement = function () {
-    if (this._elmCharacter.x - 40 <= 0) {
-      this._elmCharacter.x = 40;
-    } else if (this._elmCharacter.x + 40 >= Config.WIDTH) {
-      this._elmCharacter.x = Config.WIDTH - 40;
-    }
-
-    if (this._elmCharacter.y - 80 <= 0) {
-      this._elmCharacter.y = 80;
-    } else if (this._elmCharacter.y >= Config.HEIGHT) {
-      this._elmCharacter.y = Config.HEIGHT;
-    }
   }.bind(this);
+
+  if (Config.blockStatus[this.gridY - 1][this.gridX] !== -1 && direction === 'up') {
+    changeOfDirection();
+    return 0;
+  }
+  if (Config.blockStatus[this.gridY + 1][this.gridX] !== -1 && direction === 'down') {
+    changeOfDirection();
+    return 0;
+  }
+  if (Config.blockStatus[this.gridY][this.gridX - 1] !== -1 && direction === 'left') {
+    changeOfDirection();
+    return 0;
+  }
+  if (Config.blockStatus[this.gridY][this.gridX + 1] !== -1 && direction === 'right') {
+    changeOfDirection();
+    return 0;
+  }
 
   /**
    * 表示切り替え & 移動
@@ -157,31 +165,27 @@ Character.prototype.move = function (direction) {
   switch (direction) {
     case 'left':
       this.direction = 0;
-      hideAnimation();
-      this._elmCharacter.x -= 4;
-      restrictMovement();
-      this.gridX = Math.floor(this._elmCharacter.x / Config.UNIT_SIZE);
+      changeOfDirection();
+      this.elm.x -= 4;
+      this.gridX = Math.floor(this.elm.x / Config.UNIT_SIZE);
       break;
     case 'up':
       this.direction = 1;
-      hideAnimation();
-      this._elmCharacter.y -= 4;
-      restrictMovement();
-      this.gridY = Math.floor(this._elmCharacter.y/ Config.UNIT_SIZE);
+      changeOfDirection();
+      this.elm.y -= 4;
+      this.gridY = Math.floor((this.elm.y - 32) / Config.UNIT_SIZE);
       break;
     case 'right':
       this.direction = 2;
-      hideAnimation();
-      this._elmCharacter.x += 4;
-      restrictMovement();
-      this.gridX = Math.floor(this._elmCharacter.x / Config.UNIT_SIZE);
+      changeOfDirection();
+      this.elm.x += 4;
+      this.gridX = Math.floor(this.elm.x / Config.UNIT_SIZE);
       break;
     case 'down':
       this.direction = 3;
-      hideAnimation();
-      this._elmCharacter.y += 4;
-      this.gridY = Math.floor(this._elmCharacter.y/ Config.UNIT_SIZE);
-      restrictMovement();
+      changeOfDirection();
+      this.elm.y += 4;
+      this.gridY = Math.floor((this.elm.y - 32) / Config.UNIT_SIZE);
       break;
     default:
       break;
@@ -196,16 +200,71 @@ Character.prototype.move = function (direction) {
  */
 Character.prototype.bomb = function () {
 
-  if (Config.numOfBomb > 0) {
+  if (this.numOfBomb > 0) {
 
     if (Config.blockStatus[this.gridY][this.gridX] <= 0) {
 
-      Config.numOfBomb--;
+      this.numOfBomb--;
 
       var tt   = PIXI.Texture.fromFrame('bomb-0');
       var bomb = new Bomb(this.gridX, this.gridY, tt, this._container);
 
     }
   }
+
+};
+
+
+/**
+ * ミス
+ * @method miss
+ */
+Character.prototype.miss = function () {
+
+  this._elmAnimationCharacter[this.direction].tint = 0xff0000;
+
+  TweenMax.to(this.elm, .8, {
+    alpha: 0,
+    onComplete: function () {
+
+      this.elm.destroy({children: true});
+
+    }.bind(this)
+  });
+
+};
+
+
+
+/**
+ * デバッグ
+ * @method debugInit
+ */
+Character.prototype.debugInit = function () {
+
+  this.text = new PIXI.Text('[' + this.gridX + ', ' + this.gridY + ']', {
+    fill: 0xffffff,
+    stroke: 0x000000,
+    strokeThickness: 10
+  });
+
+  this.text.anchor.set(0.5);
+  this.text.position.set(100, 100);
+  this.rect = new PIXI.Graphics().beginFill(0x00ff00).drawRect(0, 0, Config.UNIT_SIZE, Config.UNIT_SIZE);
+  this.rect.alpha = 0.5;
+  this.rect.position.set(this.gridX * Config.UNIT_SIZE, this.gridY * Config.UNIT_SIZE);
+  this._container.addChild(this.text, this.rect);
+
+};
+
+/**
+ * デバッグ
+ * @method debug
+ */
+Character.prototype.debug = function () {
+
+  this.text.text = '[' + this.gridX + ', ' + this.gridY + ']';
+
+  this.rect.position.set(this.gridX * Config.UNIT_SIZE, this.gridY * Config.UNIT_SIZE);
 
 };

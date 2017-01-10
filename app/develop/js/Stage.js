@@ -57,6 +57,10 @@ Stage.prototype._init = function () {
 Stage.prototype._generateRoot = function () {
 
   this._rootContainer = new PIXI.Container();
+  this._rootContainer.displayList = new PIXI.DisplayList();
+
+  Config.fieldLayer = new PIXI.DisplayGroup(1, true);
+
   this._renderer = PIXI.autoDetectRenderer(Config.WIDTH, Config.HEIGHT, {
     transparent: true,
     antialias:   true

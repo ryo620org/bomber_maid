@@ -29,6 +29,7 @@
     "csscomb": "^3.1.7",
     "howler": "^2.0.1",
     "node-sass": "^3.8.0",
+    "pixi-display": "^1.0.1",
     "pixi.js": "^4.3.0",
     "postcss-cli": "^2.5.2",
     "spritesmith-cli": "^1.1.2",

@@ -98,6 +98,7 @@ Scene.prototype._showBlock = function () {
 
       if (Config.blockStatus[i][j] >= 0) {
         var tmp = new Block(j, i, this._ttBlock[Config.blockStatus[i][j]], this._container);
+        tmp.elm.displayGroup = Config.fieldLayer;
         Config.blockStatus[i][j] = tmp;
       }
 

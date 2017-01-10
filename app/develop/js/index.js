@@ -11,7 +11,9 @@
 // ================
 
 require('pixi.js');
+require('pixi-display');
 require('./lib/TweenMax.min.js');
+
 var Config       = require('./Config'),
     Character    = require('./Character'),
     Stage        = require('./Stage'),
@@ -93,7 +95,7 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
       /**
        * キャラクター追加
        */
-      this.character = new Character(sceneContainer, 10, 6);
+      Config.character = new Character(sceneContainer, 10, 6);
 
       this.mainLoop();
 
@@ -116,21 +118,26 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
       requestAnimationFrame(tick);
 
       this.stage.rendering();
+      Config.character.debug();
 
       if (this.keyStatus[Config.KEY_LEFT]) {
-        this.character.move('left');
+        Config.character.move('left');
+        Config.character.elm.zOrder = -Config.character.elm.position.y;
       }
       if (this.keyStatus[Config.KEY_UP]) {
-        this.character.move('up');
+        Config.character.move('up');
+        Config.character.elm.zOrder = -Config.character.elm.position.y;
       }
       if (this.keyStatus[Config.KEY_RIGHT]) {
-        this.character.move('right');
+        Config.character.move('right');
+        Config.character.elm.zOrder = -Config.character.elm.position.y;
       }
       if (this.keyStatus[Config.KEY_DOWN]) {
-        this.character.move('down');
+        Config.character.move('down');
+        Config.character.elm.zOrder = -Config.character.elm.position.y;
       }
       if (this.keyStatus[Config.KEY_SPACE]) {
-        this.character.bomb();
+        Config.character.bomb();
       }
     }.bind(this);
 

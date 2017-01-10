@@ -53,7 +53,7 @@ Unit.prototype._init = function () {
   this.elm = new PIXI.Sprite(this._texture);
 
   this.elm.anchor.set(0.5, 1);
-  this.elm.position.set(Config.UNIT_SIZE * this.gridX + Config.UNIT_SIZE / 2, Config.UNIT_SIZE * (this.gridY + 1))
+  this.elm.position.set(Config.UNIT_SIZE * this.gridX + Config.UNIT_SIZE / 2, Config.UNIT_SIZE * (this.gridY + 1));
   this._container.addChild(this.elm);
 
 };
