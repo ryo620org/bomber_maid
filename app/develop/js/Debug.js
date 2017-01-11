@@ -1,5 +1,5 @@
 /**
- * @fileoverview Debug
+ * @class Debug
  * @constructor
  */
 
@@ -37,7 +37,7 @@ module.exports = Debug;
  */
 Debug.prototype._init = function () {
 
-//  this._showGrid();
+  this._showGrid();
 
 };
 
@@ -53,21 +53,21 @@ Debug.prototype._showGrid = function () {
       i;
 
   /**
-   * 水平ライン
-   */
-  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
-    verticalLine.push(new PIXI.Graphics().beginFill(Config.COLOR_RED).drawRect(0, 0, Config.WIDTH, 2));
-    verticalLine[i].position.set(0, Config.UNIT_SIZE * i);
-    debugStage.addChild(verticalLine[i]);
-  }
-
-  /**
-   * 垂直ライン
+   * グリッド-X
    */
   for (i = 0; i < Config.HORIZONTAL_UNIT; i++) {
     horizontalLine.push(new PIXI.Graphics().beginFill(Config.COLOR_YELLOW).drawRect(0, 0, 2, Config.HEIGHT));
-    horizontalLine[i].position.set(Config.UNIT_SIZE * i, 0);
+    horizontalLine[i].position.set(Config.UNIT_SIZE_X * i, 0);
     debugStage.addChild(horizontalLine[i]);
+  }
+
+  /**
+   * グリッド-Y
+   */
+  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
+    verticalLine.push(new PIXI.Graphics().beginFill(Config.COLOR_RED).drawRect(0, 0, Config.WIDTH, 2));
+    verticalLine[i].position.set(0, Config.UNIT_SIZE_Y * i);
+    debugStage.addChild(verticalLine[i]);
   }
 
   debugStage.alpha = 0.5;

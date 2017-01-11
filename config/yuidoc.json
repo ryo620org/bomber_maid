@@ -1,0 +1,10 @@
+{
+  "name": "BOMBER MAID",
+  "description": "hoge hoge",
+  "version": "0.1",
+  "url": "http://ryo620.com/",
+  "options": {
+    "outdir": "./doc",
+    "paths": "./app/develop/js"
+  }
+}

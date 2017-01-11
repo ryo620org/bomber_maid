@@ -1,5 +1,5 @@
 /**
- * @fileoverview BOMBER MAID
+ * BOMBER MAID
 */
 
 
@@ -15,9 +15,10 @@ require('pixi-display');
 require('./lib/TweenMax.min.js');
 
 var Config       = require('./Config'),
-    Character    = require('./Character'),
-    Stage        = require('./Stage'),
+    Player       = require('./Player'),
+    Enemy        = require('./Enemy'),
     Debug        = require('./Debug'),
+    Stage        = require('./Stage'),
     Scene        = require('./Scene');
 
 
@@ -72,7 +73,6 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
     .add('sprite', './_assets/img/sprite.json')
     .once('complete', function(){
 
-      var debugContainer;
       var sceneContainer;
 
       /**
@@ -80,12 +80,19 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
        */
       this.stage     = new Stage();
       sceneContainer = this.stage.addContainer(sceneContainer);
-      debugContainer = this.stage.addContainer(debugContainer);
 
-      /**
-       * デバッグ追加
-       */
-      this.debug     = new Debug(debugContainer);
+      if (Config.DEBUG_MODE) {
+
+        var debugContainer;
+
+        debugContainer = this.stage.addContainer(debugContainer);
+
+        /**
+         * デバッグ追加
+         */
+        this.debug     = new Debug(debugContainer);
+      }
+
 
       /**
        * シーン追加
@@ -95,7 +102,13 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
       /**
        * キャラクター追加
        */
-      Config.character = new Character(sceneContainer, 10, 6);
+      Config.player = new Player('player', sceneContainer, 10, 8);
+
+
+      /**
+       * 敵追加
+       */
+      Config.enemy = new Enemy('enemy', sceneContainer, 6, 5);
 
       this.mainLoop();
 
@@ -118,28 +131,27 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
       requestAnimationFrame(tick);
 
       this.stage.rendering();
-      Config.character.debug();
 
       if (this.keyStatus[Config.KEY_LEFT]) {
-        Config.character.move('left');
-        Config.character.elm.zOrder = -Config.character.elm.position.y;
+        Config.player.move('left');
       }
       if (this.keyStatus[Config.KEY_UP]) {
-        Config.character.move('up');
-        Config.character.elm.zOrder = -Config.character.elm.position.y;
+        Config.player.move('up');
       }
       if (this.keyStatus[Config.KEY_RIGHT]) {
-        Config.character.move('right');
-        Config.character.elm.zOrder = -Config.character.elm.position.y;
+        Config.player.move('right');
       }
       if (this.keyStatus[Config.KEY_DOWN]) {
-        Config.character.move('down');
-        Config.character.elm.zOrder = -Config.character.elm.position.y;
+        Config.player.move('down');
       }
       if (this.keyStatus[Config.KEY_SPACE]) {
-        Config.character.bomb();
+        Config.player.bomb();
       }
+
+      Config.enemy.control();
+
     }.bind(this);
+
 
     tick();
   }

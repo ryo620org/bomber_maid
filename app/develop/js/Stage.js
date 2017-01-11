@@ -1,5 +1,5 @@
 /**
- * @fileoverview Stage
+ * @class Stage
  * @constructor
  */
 
@@ -66,7 +66,7 @@ Stage.prototype._generateRoot = function () {
     antialias:   true
   });
 
-  this._rootContainer.position.set(-Config.UNIT_SIZE / 2);
+  this._rootContainer.position.set(-Config.UNIT_SIZE_X / 2, Config.UNIT_SIZE_Y / 2);
 
   document.getElementById(Stage.STAGE_HTML_ID).appendChild(this._renderer.view);
 

@@ -1,5 +1,5 @@
 /**
- * @fileoverview Scene
+ * @class Scene
  * @constructor
  */
 
@@ -72,14 +72,16 @@ Scene.prototype._showMap = function () {
       j;
 
   for (i = 0; i < Config.VERTICAL_UNIT; i++) {
-
     for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
 
-      var tmp = new Unit(j, i, this._ttBase[Config.baseStatus[i][j]], this._container);
-      Config.baseStatus[i][j] = tmp;
+      if (Config.baseStatus[i][j] >= 0) {
+        var tmp = new Unit(this._ttBase[Config.baseStatus[i][j]], this._container, j, i);
+        Config.baseStatus[i][j] = tmp;
+      }
 
     }
   }
+
 }
 
 
@@ -93,12 +95,10 @@ Scene.prototype._showBlock = function () {
       j;
 
   for (i = 0; i < Config.VERTICAL_UNIT; i++) {
-
     for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
 
       if (Config.blockStatus[i][j] >= 0) {
-        var tmp = new Block(j, i, this._ttBlock[Config.blockStatus[i][j]], this._container);
-        tmp.elm.displayGroup = Config.fieldLayer;
+        var tmp = new Block(this._ttBlock[Config.blockStatus[i][j]], this._container, j, i);
         Config.blockStatus[i][j] = tmp;
       }
 

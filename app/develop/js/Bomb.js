@@ -1,6 +1,15 @@
 /**
- * @fileoverview Bomb
+ * グリッド状に配置される爆弾を生成する
+ * 一定時間後に爆発する
+ *
+ * @class Bomb
  * @constructor
+ * @extends Block
+ * @param texture {PIXI.Texture} テクスチャ
+ * @param container {PIXI.Container} 配置するコンテナ
+ * @param gridX {Number} グリッドのX座標
+ * @param gridY {Number} グリッドのX座標
+ * @param opts {Object} オプション
  */
 
 'use strict';
@@ -10,7 +19,7 @@
 // ================
 
 var Config = require('./Config'),
-    Block   = require('./Block');
+    Block  = require('./Block');
 
 
 // ================
@@ -45,7 +54,7 @@ Bomb.DURATION = 3000;
 // ================
 
 /**
- * アニメーション
+ * 一定時間アニメーションさせる
  * @method _bombAnimation
  */
 Bomb.prototype._bombAnimation = function () {
@@ -66,7 +75,7 @@ Bomb.prototype._bombAnimation = function () {
 
 
 /**
- * 爆発
+ * 爆発させる
  * @method explosion
  */
 Bomb.prototype.explosion = function () {
@@ -90,11 +99,8 @@ Bomb.prototype.explosion = function () {
         if (0 <= x && x < Config.HORIZONTAL_UNIT &&
             0 <= y && y < Config.VERTICAL_UNIT) {
 
-          if (Config.character.gridX === x && Config.character.gridY === y) {
-            /**
-             * 爆風上にキャラクターがいる場合ミス
-             */
-            Config.character.miss();
+          if (Config.player.gridX === x && Config.player.gridY === y) {
+            Config.player.miss();
           }
 
           if (Config.blockStatus[y][x] === -1) {
@@ -104,9 +110,6 @@ Bomb.prototype.explosion = function () {
             mask |= FLAG_DESTROY;
             return mask;
           } else if (Config.blockStatus[y][x].constructor === Bomb) {
-            /**
-             * 爆風上に爆弾がある場合、爆発させる
-             */
             Config.blockStatus[y][x].explosion();
           }
         }
@@ -123,7 +126,7 @@ Bomb.prototype.explosion = function () {
     this.isExploded = true;
   }
 
-  Config.character.numOfBomb++;
+  Config.player.numOfBomb++;
   Config.blockStatus[this.gridY][this.gridX] = 0;
 
   this._tween.pause();
@@ -160,7 +163,7 @@ Bomb.prototype.explosion = function () {
 
       if ((flags & FLAG_CONTINUE) != 0) {
 
-        blasts[i][j] = new Block(x, y, tt, explosionContainer);
+        blasts[i][j] = new Block(tt, explosionContainer, x, y);
         blasts[i][j].vanish(500);
 
       } else {

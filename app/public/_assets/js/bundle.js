@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @fileoverview BOMBER MAID
+	 * BOMBER MAID
 	*/
 
 
@@ -61,10 +61,11 @@
 	__webpack_require__(189);
 
 	var Config       = __webpack_require__(191),
-	    Character    = __webpack_require__(192),
-	    Stage        = __webpack_require__(196),
-	    Debug        = __webpack_require__(197),
-	    Scene        = __webpack_require__(198);
+	    Player       = __webpack_require__(192),
+	    Enemy        = __webpack_require__(197),
+	    Debug        = __webpack_require__(198),
+	    Stage        = __webpack_require__(199),
+	    Scene        = __webpack_require__(200);
 
 
 	/**
@@ -118,7 +119,6 @@
 	    .add('sprite', './_assets/img/sprite.json')
 	    .once('complete', function(){
 
-	      var debugContainer;
 	      var sceneContainer;
 
 	      /**
@@ -126,12 +126,19 @@
 	       */
 	      this.stage     = new Stage();
 	      sceneContainer = this.stage.addContainer(sceneContainer);
-	      debugContainer = this.stage.addContainer(debugContainer);
 
-	      /**
-	       * デバッグ追加
-	       */
-	      this.debug     = new Debug(debugContainer);
+	      if (Config.DEBUG_MODE) {
+
+	        var debugContainer;
+
+	        debugContainer = this.stage.addContainer(debugContainer);
+
+	        /**
+	         * デバッグ追加
+	         */
+	        this.debug     = new Debug(debugContainer);
+	      }
+
 
 	      /**
 	       * シーン追加
@@ -141,7 +148,13 @@
 	      /**
 	       * キャラクター追加
 	       */
-	      Config.character = new Character(sceneContainer, 10, 6);
+	      Config.player = new Player('player', sceneContainer, 10, 8);
+
+
+	      /**
+	       * 敵追加
+	       */
+	      Config.enemy = new Enemy('enemy', sceneContainer, 6, 5);
 
 	      this.mainLoop();
 
@@ -164,28 +177,27 @@
 	      requestAnimationFrame(tick);
 
 	      this.stage.rendering();
-	      Config.character.debug();
 
 	      if (this.keyStatus[Config.KEY_LEFT]) {
-	        Config.character.move('left');
-	        Config.character.elm.zOrder = -Config.character.elm.position.y;
+	        Config.player.move('left');
 	      }
 	      if (this.keyStatus[Config.KEY_UP]) {
-	        Config.character.move('up');
-	        Config.character.elm.zOrder = -Config.character.elm.position.y;
+	        Config.player.move('up');
 	      }
 	      if (this.keyStatus[Config.KEY_RIGHT]) {
-	        Config.character.move('right');
-	        Config.character.elm.zOrder = -Config.character.elm.position.y;
+	        Config.player.move('right');
 	      }
 	      if (this.keyStatus[Config.KEY_DOWN]) {
-	        Config.character.move('down');
-	        Config.character.elm.zOrder = -Config.character.elm.position.y;
+	        Config.player.move('down');
 	      }
 	      if (this.keyStatus[Config.KEY_SPACE]) {
-	        Config.character.bomb();
+	        Config.player.bomb();
 	      }
+
+	      Config.enemy.control();
+
 	    }.bind(this);
+
 
 	    tick();
 	  }
@@ -38302,7 +38314,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @fileoverview 変数
+	 * 変数
 	 */
 
 
@@ -38314,6 +38326,10 @@
 
 	module.exports = Config;
 
+	/**
+	 * デバッグモード
+	 */
+	Config.DEBUG_MODE   = false;
 
 	/**
 	 * 色の管理
@@ -38340,7 +38356,8 @@
 	 * ユニットサイズ
 	 * @constant
 	 */
-	Config.UNIT_SIZE = 64;
+	Config.UNIT_SIZE_X = 64;
+	Config.UNIT_SIZE_Y = 40;
 
 	/**
 	 * キャラクターサイズ
@@ -38352,8 +38369,8 @@
 	 * ブロック数
 	 * @constant
 	 */
-	Config.HORIZONTAL_UNIT = Config.WIDTH  / Config.UNIT_SIZE + 1; // 21
-	Config.VERTICAL_UNIT   = Config.HEIGHT / Config.UNIT_SIZE + 1; // 13
+	Config.HORIZONTAL_UNIT = 21;
+	Config.VERTICAL_UNIT   = 19;
 
 	/**
 	 * キーコード
@@ -38376,7 +38393,7 @@
 	 * @constant
 	 */
 	Config.NUMBER_OF_BASECHIP  = 13;
-	Config.NUMBER_OF_BLOCKCHIP = 8;
+	Config.NUMBER_OF_BLOCKCHIP = 24;
 
 	/**
 	 * ベースのマップ
@@ -38384,17 +38401,25 @@
 	 */
 	Config.baseStatus = [
 	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	  [0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
-	  [0, 3, 7, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 6, 8, 0],
-	  [0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0],
 	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	  [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0],
-	  [0, 6, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,11,12,10, 0],
-	  [0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	];
 
@@ -38403,19 +38428,25 @@
 	 * @constant
 	 */
 	Config.blockStatus = [
-	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	  [0, 0, 0, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4, 0, 0, 0],
-	  [0, 0, 1, 1,-1,-1, 1,-1, 1,-1,-1, 1, 1,-1,-1,-1,-1, 1, 1, 0, 0],
-	  [0, 5, 1, 0, 1, 0,-1, 0, 1, 0, 1, 0, 1, 0,-1, 0, 1, 0,-1, 5, 0],
-	  [0, 6, 1, 1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1, 1,-1, 1,-1,-1, 6, 0],
-	  [0, 7,-1, 0,-1, 0, 1, 0, 1, 0,-1, 0,-1, 0,-1, 0, 1, 0, 1, 7, 0],
-	  [0,-1, 1, 1, 1,-1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1, 1, 1,-1,-1, 0],
-	  [0, 5,-1, 0, 1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0, 1, 0,-1, 5, 0],
-	  [0, 6, 1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 1,-1, 1, 6, 0],
-	  [0, 7,-1, 0,-1, 0, 1, 0, 1, 0,-1, 0,-1, 0, 1, 0,-1, 0, 1, 7, 0],
-	  [0, 0,-1,-1, 1,-1, 1,-1, 1, 1,-1,-1,-1,-1,-1, 1,-1, 1, 1, 0, 0],
-	  [0, 0, 0, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4, 0, 0, 0],
-	  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	  [-1, 0, 0, 0, 0,10, 0, 0, 0, 0, 0, 0, 0, 0, 0,10, 0, 0, 0, 0,-1],
+	  [ 0, 0,-1, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4,-1, 0, 0],
+	  [ 0, 5, 1, 1,-1,-1, 1,-1, 1,-1, 5, 1, 1,-1,-1,-1,-1, 1, 1, 5, 0],
+	  [ 0, 7, 1, 0, 1,10, 1, 0, 1, 0, 6, 0, 1, 0,-1,10, 1, 0,-1, 7, 0],
+	  [ 0,-1, 1, 1,-1,-1,-1,-1, 1,-1, 7,-1,-1,-1, 1,-1, 1,-1,-1,-1, 0],
+	  [ 0,-1, 1, 0, 1, 0,-1, 0, 1, 0, 1, 0, 1, 0,-1, 0, 1, 0,-1,-1, 0],
+	  [ 0, 5, 1, 1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1, 1,-1, 1,-1,-1, 5, 0],
+	  [ 0, 7,-1, 0,-1,10, 1, 0, 1, 0,-1, 0,-1, 0,-1,10, 1, 0, 1, 7, 0],
+	  [ 0,-1, 1, 1, 1,-1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1, 1, 1,-1,-1, 0],
+	  [ 0,-1,-1, 0, 1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0, 1,-1,-1, 1, 0],
+	  [ 0, 5, 8,-1, 1,-1,-1,-1, 1,-1,-1,-1, 1,-1, 1,-1, 1,-1, 8, 5, 0],
+	  [ 0, 7, 1, 0,-1,10, 1, 0, 1, 0, 5, 0,-1, 0, 1,10, 1, 0, 1, 7, 0],
+	  [ 0,-1, 1, 1, 1,-1, 1, 1,-1,-1, 6,-1, 1, 1,-1,-1, 1, 1,-1,-1, 0],
+	  [ 0,-1,-1, 0, 1, 0,-1, 0,-1, 0, 7, 0,-1, 0,-1, 0, 1, 0,-1,-1, 0],
+	  [ 0,-1, 1, 1, 1,-1,-1, 1, 1, 1, 1,-1,-1, 1,-1,-1, 1,-1, 1,-1, 0],
+	  [ 0, 1,-1, 0,-1,10, 1, 0, 1, 0,-1, 0,-1, 0, 1,10,-1, 0, 1,-1, 0],
+	  [ 0,-1,-1,-1, 1,-1, 1,-1, 1, 1,-1,-1,-1,-1,-1, 1,-1, 1, 1,-1, 0],
+	  [ 0, 8,-1, 2, 3, 4, 8, 2, 3, 4,-1, 2, 3, 4, 8, 2, 3, 4,-1, 8, 0],
+	  [ 9, 9, 9, 9, 9,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,11, 9, 9, 9, 9, 9]
 	];
 
 /***/ },
@@ -38423,10 +38454,103 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @fileoverview Character
+	 * プレイアブルキャラクターを生成する
+	 *
+	 * @class Player
 	 * @constructor
-	 * @params gridX [number]
-	 * @params gridY [number]
+	 * @extends Character
+	 * @param name {String} キャラクター名
+	 * @param container {PIXI.Container} 配置するコンテナ
+	 * @param gridX {Number} グリッドのX座標
+	 * @param gridY {Number} グリッドのX座標
+	 * @param opts {Object} オプション
+	 */
+
+	'use strict';
+
+	// ================
+	//     MODULE
+	// ================
+
+	var Config    = __webpack_require__(191),
+	    Character = __webpack_require__(193),
+	    Bomb      = __webpack_require__(194);
+
+
+	// ================
+	//   CONSTRUCTOR
+	// ================
+
+	var Player = function () {
+
+	  Character.apply(this, arguments);
+
+	  /**
+	   * 所持ボムの数
+	   */
+	  this.numOfBomb = Player.INITIAL_BOMBS;
+
+	};
+
+	module.exports = Player;
+
+	Player.prototype = Object.create(Character.prototype);
+	Player.prototype.constructor = Player;
+
+
+	// ================
+	//     CONSTANT
+	// ================
+
+	Player.INITIAL_BOMBS       = 12; // 初期爆弾数
+
+	// ================
+	//      METHOD
+	// ================
+
+	/**
+	 * ステータス設定
+	 * @method _setStatus
+	 */
+	Player.prototype._setStatus = function () {
+
+	};
+
+
+	/**
+	 * 爆弾を置く
+	 * @method bomb
+	 */
+	Player.prototype.bomb = function () {
+
+	  if (this.numOfBomb > 0) {
+
+	    if (Config.blockStatus[this.gridY][this.gridX] <= 0) {
+
+	      this.numOfBomb--;
+
+	      var tt   = PIXI.Texture.fromFrame('bomb-0');
+	      var bomb = new Bomb(tt, this._container, this.gridX, this.gridY);
+
+	    }
+	  }
+
+	};
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * ステージ上を動くキャラクターを生成する
+	 *
+	 * @class Character
+	 * @constructor
+	 * @param name {String} キャラクター名
+	 * @param container {PIXI.Container} 配置するコンテナ
+	 * @param gridX {Number} グリッドのX座標
+	 * @param gridY {Number} グリッドのX座標
+	 * @param opts {Object} オプション
 	 */
 
 
@@ -38437,49 +38561,87 @@
 	//     MODULE
 	// ================
 
-	var Config = __webpack_require__(191),
-	    Bomb   = __webpack_require__(193);
+	var Config = __webpack_require__(191);
 
 
 	// ================
 	//   CONSTRUCTOR
 	// ================
 
-	var Character = function (container, gridX, gridY) {
+	var Character = function (name, container, gridX, gridY, opts) {
 
 	  /**
-	   * キャラクターのコンテナ
+	   * キャラクター名
+	   * @property name
+	   * @type String
+	   */
+	  this.name = name;
+
+	  /**
+	   * 親コンテナ
+	   * @property _container
+	   * @type PIXI.Container
 	   */
 	  this._container = container;
 
 	  /**
-	   * キャラクター位置
+	   * X座標
+	   * @property gridX
+	   * @type Number
 	   */
 	  this.gridX = gridX;
+
+	  /**
+	   * Y座標
+	   * @property gridY
+	   * @type Number
+	   */
 	  this.gridY = gridY;
 
 	  /**
-	   * キャラクターのコンテナ
+	   * 内部X座標
+	   * @property innerX
+	   * @type Number
 	   */
-	  this.numOfBomb = Character.INITIAL_BOMBS;
+	  this.innerX = Character.INNER_GRID / 2;
 
 	  /**
-	   * キャラクター向き
+	   * 内部Y座標
+	   * @property innerY
+	   * @type Number
+	   */
+	  this.innerY = Character.INNER_GRID / 2;
+
+	  /**
+	   * キャラクターの向き [Left: 0, Back: 1, Right: 2, Front: 3]
+	   * @property direction
+	   * @type Number
 	   */
 	  this.direction = 3;
 
 	  /**
-	   * キャラクターアニメーション要素の配列
+	   * アニメーション要素の配列
+	   * @property _elmAnimationCharacter
+	   * @type Array
 	   */
 	  this._elmAnimationCharacter = [];
 
 	  /**
 	   * キャラクター要素
+	   * @property elm
+	   * @type PIXI.Container
 	   */
 	  this.elm = new PIXI.Container();
 
+	  /**
+	   * オプション
+	   * @property opts
+	   * @type Object
+	   */
+	  this.opts = opts || {};
+
 	  this._init.apply(this);
-	  this.debugInit();
+
 	};
 
 	module.exports = Character;
@@ -38489,10 +38651,34 @@
 	//     CONSTANT
 	// ================
 
-	Character.ANIMATION_FRAME     = 4; // 4フレーム
-	Character.ANIMATION_DIRECTION = 4; // 4方向
-	Character.SPRITE_OFFSET_Y     = 8; // グリッド上でのオフセット値
-	Character.INITIAL_BOMBS       = 3; // 初期爆弾数
+	/**
+	 * 1方向のアニメーションフレーム数
+	 * @property ANIMATION_FRAME
+	 * @type Number
+	 */
+	Character.ANIMATION_FRAME     = 4;
+
+	/**
+	 * 方向数
+	 * @property ANIMATION_DIRECTION
+	 * @type Number
+	 */
+	Character.ANIMATION_DIRECTION = 4;
+
+	/**
+	 * グリッド上から上方向へのオフセット値
+	 * @property SPRITE_OFFSET_Y
+	 * @type Number
+	 */
+	Character.SPRITE_OFFSET_Y     = 8;
+
+	/**
+	 * 内部グリッド分割数
+	 * @property INNER_GRID
+	 * @type Number
+	 */
+	Character.INNER_GRID          = 12;
+
 
 	// ================
 	//      METHOD
@@ -38506,7 +38692,7 @@
 
 	  var i, j,
 	      /**
-	       * テクスチャの配列（Left: 0, Back: 1, Right: 2, Front: 3）
+	       * テクスチャの配列[Left: 0, Back: 1, Right: 2, Front: 3]
 	       */
 	      ttCharacter = [];
 
@@ -38522,26 +38708,32 @@
 	                  j === 2 ? 0:
 	                  j === 3 ? 2:
 	                  0;
-	      ttCharacter[i].push(PIXI.Texture.fromFrame('character-' + i + '-' + frame));
+	      ttCharacter[i].push(PIXI.Texture.fromFrame(this.name + '-' + i + '-' + frame));
 	    }
 
 	    this._elmAnimationCharacter.push(new PIXI.extras.AnimatedSprite(ttCharacter[i]));
-	    this._elmAnimationCharacter[i].play();
 	    this._elmAnimationCharacter[i].animationSpeed = 0.1;
 	    this._elmAnimationCharacter[i].anchor.set(0.5, 1);
 	    this._elmAnimationCharacter[i].position.y = -Character.SPRITE_OFFSET_Y;
 	    this._elmAnimationCharacter[i].visible = false;
+	    this._elmAnimationCharacter[i].play();
 	    this.elm.addChild(this._elmAnimationCharacter[i]);
 	  }
 
-	  this.elm.displayGroup = Config.fieldLayer;
-
 	  /**
-	   * 初期方向を向く
+	   * 初期方向
 	   */
 	  this._elmAnimationCharacter[this.direction].visible = true;
 
-	  this.elm.position.set((this.gridX + 0.5) * Config.UNIT_SIZE, (this.gridY + 1) * Config.UNIT_SIZE);
+	  /**
+	   * 初期位置
+	   */
+	  this.elm.position.set((this.gridX + 0.5) * Config.UNIT_SIZE_X,
+	                        (this.gridY + 1)   * Config.UNIT_SIZE_Y);
+
+
+	  this.elm.displayGroup = Config.fieldLayer;
+	  this.elm.zOrder = -this.elm.position.y;
 
 	  this._container.addChild(this.elm);
 
@@ -38556,85 +38748,117 @@
 
 	  var i,
 
-	  /**
-	   * 全てのアニメーションを非表示
-	   */
-	  changeOfDirection = function () {
-	    for (i = 0; i < Character.ANIMATION_DIRECTION; i++) {
-	      this._elmAnimationCharacter[i].visible = false;
-	    }
-	    this._elmAnimationCharacter[this.direction].visible = true;
-	  }.bind(this);
+	      /**
+	       * 向きを変更
+	       */
+	      changeOfDirection = function () {
+	        for (i = 0; i < Character.ANIMATION_DIRECTION; i++) {
+	          this._elmAnimationCharacter[i].visible = false;
+	        }
+	        this._elmAnimationCharacter[this.direction].visible = true;
+	      }.bind(this),
 
-	  if (Config.blockStatus[this.gridY - 1][this.gridX] !== -1 && direction === 'up') {
-	    changeOfDirection();
-	    return 0;
-	  }
-	  if (Config.blockStatus[this.gridY + 1][this.gridX] !== -1 && direction === 'down') {
-	    changeOfDirection();
-	    return 0;
-	  }
-	  if (Config.blockStatus[this.gridY][this.gridX - 1] !== -1 && direction === 'left') {
-	    changeOfDirection();
-	    return 0;
-	  }
-	  if (Config.blockStatus[this.gridY][this.gridX + 1] !== -1 && direction === 'right') {
-	    changeOfDirection();
-	    return 0;
-	  }
+	      /**
+	       * grid、innerの位置計算
+	       */
+	      checkGrid = function () {
+	        if (this.innerX < 0) {
+	          this.innerX = Character.INNER_GRID - 1;
+	          this.gridX--;
+	        } else if (this.innerX >= Character.INNER_GRID) {
+	          this.innerX = 0;
+	          this.gridX++;
+	        }
+	        if (this.innerY < 0) {
+	          this.innerY = Character.INNER_GRID - 1;
+	          this.gridY--;
+	        } else if (this.innerY >= Character.INNER_GRID) {
+	          this.innerY = 0;
+	          this.gridY++;
+	        }
+	      }.bind(this),
+
+	      /**
+	       * 当たり判定
+	       */
+	      collisionDetection = function (x, y) {
+
+	        if (direction === 'left' && this.innerX <= Character.INNER_GRID / 2) {
+	          if (Config.blockStatus[y][x] !== -1) {
+	            return false;
+	          }
+	        }
+
+	        if (direction === 'right' && this.innerX >= Character.INNER_GRID / 2) {
+	          if (Config.blockStatus[y][x] !== -1) {
+	            return false;
+	          }
+	        }
+
+	        if (direction === 'up' && this.innerY <= Character.INNER_GRID / 2) {
+	          if (Config.blockStatus[y][x] !== -1) {
+	            return false;
+	          }
+	        }
+
+	        if (direction === 'down' && this.innerY >= Character.INNER_GRID / 2) {
+	          if (Config.blockStatus[y][x] !== -1) {
+	            return false;
+	          }
+	        }
+
+	        return true;
+	      }.bind(this);
 
 	  /**
-	   * 表示切り替え & 移動
+	   * 移動
 	   */
 	  switch (direction) {
 	    case 'left':
 	      this.direction = 0;
 	      changeOfDirection();
-	      this.elm.x -= 4;
-	      this.gridX = Math.floor(this.elm.x / Config.UNIT_SIZE);
+	      if (collisionDetection(this.gridX - 1, this.gridY)) {
+	        this.elm.x -= Config.UNIT_SIZE_X / Character.INNER_GRID;
+	        this.innerX--;
+	      }
 	      break;
+
 	    case 'up':
 	      this.direction = 1;
 	      changeOfDirection();
-	      this.elm.y -= 4;
-	      this.gridY = Math.floor((this.elm.y - 32) / Config.UNIT_SIZE);
+	      if (collisionDetection(this.gridX, this.gridY - 1)) {
+	        this.elm.y -= Config.UNIT_SIZE_Y / Character.INNER_GRID;
+	        this.innerY--;
+	      }
 	      break;
+
 	    case 'right':
 	      this.direction = 2;
 	      changeOfDirection();
-	      this.elm.x += 4;
-	      this.gridX = Math.floor(this.elm.x / Config.UNIT_SIZE);
+	      if (collisionDetection(this.gridX + 1, this.gridY)) {
+	        this.elm.x += Config.UNIT_SIZE_X / Character.INNER_GRID;
+	        this.innerX++;
+	      }
 	      break;
+
 	    case 'down':
 	      this.direction = 3;
 	      changeOfDirection();
-	      this.elm.y += 4;
-	      this.gridY = Math.floor((this.elm.y - 32) / Config.UNIT_SIZE);
+	      if (collisionDetection(this.gridX, this.gridY + 1)) {
+	        this.elm.y += Config.UNIT_SIZE_Y / Character.INNER_GRID;
+	        this.innerY++;
+	      }
 	      break;
+
 	    default:
 	      break;
 	  }
 
-	};
+	  /** z-index */
+	  this.elm.zOrder = -this.elm.position.y;
 
 
-	/**
-	 * 爆弾を置く
-	 * @method bomb
-	 */
-	Character.prototype.bomb = function () {
-
-	  if (this.numOfBomb > 0) {
-
-	    if (Config.blockStatus[this.gridY][this.gridX] <= 0) {
-
-	      this.numOfBomb--;
-
-	      var tt   = PIXI.Texture.fromFrame('bomb-0');
-	      var bomb = new Bomb(this.gridX, this.gridY, tt, this._container);
-
-	    }
-	  }
+	  checkGrid();
 
 	};
 
@@ -38658,48 +38882,22 @@
 
 	};
 
-
-
-	/**
-	 * デバッグ
-	 * @method debugInit
-	 */
-	Character.prototype.debugInit = function () {
-
-	  this.text = new PIXI.Text('[' + this.gridX + ', ' + this.gridY + ']', {
-	    fill: 0xffffff,
-	    stroke: 0x000000,
-	    strokeThickness: 10
-	  });
-
-	  this.text.anchor.set(0.5);
-	  this.text.position.set(100, 100);
-	  this.rect = new PIXI.Graphics().beginFill(0x00ff00).drawRect(0, 0, Config.UNIT_SIZE, Config.UNIT_SIZE);
-	  this.rect.alpha = 0.5;
-	  this.rect.position.set(this.gridX * Config.UNIT_SIZE, this.gridY * Config.UNIT_SIZE);
-	  this._container.addChild(this.text, this.rect);
-
-	};
-
-	/**
-	 * デバッグ
-	 * @method debug
-	 */
-	Character.prototype.debug = function () {
-
-	  this.text.text = '[' + this.gridX + ', ' + this.gridY + ']';
-
-	  this.rect.position.set(this.gridX * Config.UNIT_SIZE, this.gridY * Config.UNIT_SIZE);
-
-	};
-
 /***/ },
-/* 193 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @fileoverview Bomb
+	 * グリッド状に配置される爆弾を生成する
+	 * 一定時間後に爆発する
+	 *
+	 * @class Bomb
 	 * @constructor
+	 * @extends Block
+	 * @param texture {PIXI.Texture} テクスチャ
+	 * @param container {PIXI.Container} 配置するコンテナ
+	 * @param gridX {Number} グリッドのX座標
+	 * @param gridY {Number} グリッドのX座標
+	 * @param opts {Object} オプション
 	 */
 
 	'use strict';
@@ -38709,7 +38907,7 @@
 	// ================
 
 	var Config = __webpack_require__(191),
-	    Block   = __webpack_require__(194);
+	    Block  = __webpack_require__(195);
 
 
 	// ================
@@ -38744,7 +38942,7 @@
 	// ================
 
 	/**
-	 * アニメーション
+	 * 一定時間アニメーションさせる
 	 * @method _bombAnimation
 	 */
 	Bomb.prototype._bombAnimation = function () {
@@ -38765,7 +38963,7 @@
 
 
 	/**
-	 * 爆発
+	 * 爆発させる
 	 * @method explosion
 	 */
 	Bomb.prototype.explosion = function () {
@@ -38789,11 +38987,8 @@
 	        if (0 <= x && x < Config.HORIZONTAL_UNIT &&
 	            0 <= y && y < Config.VERTICAL_UNIT) {
 
-	          if (Config.character.gridX === x && Config.character.gridY === y) {
-	            /**
-	             * 爆風上にキャラクターがいる場合ミス
-	             */
-	            Config.character.miss();
+	          if (Config.player.gridX === x && Config.player.gridY === y) {
+	            Config.player.miss();
 	          }
 
 	          if (Config.blockStatus[y][x] === -1) {
@@ -38803,9 +38998,6 @@
 	            mask |= FLAG_DESTROY;
 	            return mask;
 	          } else if (Config.blockStatus[y][x].constructor === Bomb) {
-	            /**
-	             * 爆風上に爆弾がある場合、爆発させる
-	             */
 	            Config.blockStatus[y][x].explosion();
 	          }
 	        }
@@ -38822,7 +39014,7 @@
 	    this.isExploded = true;
 	  }
 
-	  Config.character.numOfBomb++;
+	  Config.player.numOfBomb++;
 	  Config.blockStatus[this.gridY][this.gridX] = 0;
 
 	  this._tween.pause();
@@ -38859,7 +39051,7 @@
 
 	      if ((flags & FLAG_CONTINUE) != 0) {
 
-	        blasts[i][j] = new Block(x, y, tt, explosionContainer);
+	        blasts[i][j] = new Block(tt, explosionContainer, x, y);
 	        blasts[i][j].vanish(500);
 
 	      } else {
@@ -38880,12 +39072,20 @@
 
 
 /***/ },
-/* 194 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @fileoverview Block
+	 * グリッド状に配置されるブロックを生成する
+	 *
+	 * @class Block
 	 * @constructor
+	 * @extends Unit
+	 * @param texture {PIXI.Texture} テクスチャ
+	 * @param container {PIXI.Container} 配置するコンテナ
+	 * @param gridX {Number} グリッドのX座標
+	 * @param gridY {Number} グリッドのX座標
+	 * @param opts {Object} オプション
 	 */
 
 	'use strict';
@@ -38895,7 +39095,7 @@
 	// ================
 
 	var Config = __webpack_require__(191),
-	    Unit   = __webpack_require__(195);
+	    Unit   = __webpack_require__(196);
 
 
 	// ================
@@ -38906,8 +39106,15 @@
 
 	  Unit.apply(this, arguments);
 
+	  /**
+	   * 破壊できるかどうか
+	   * @property isDestructible
+	   * @type Boolean
+	   */
 	  this.isDestructible = false;
+
 	  this._setStatus();
+	  this._setLayer();
 
 	};
 
@@ -38918,12 +39125,32 @@
 
 
 	/**
-	 * ステータス設定
+	 * オブジェクトのレイヤーを設定する
+	 * @method _setLayer
+	 */
+	Block.prototype._setLayer = function () {
+
+	  this.elm.displayGroup = Config.fieldLayer;
+	  this.elm.zOrder = -this.elm.position.y;
+
+	};
+
+
+	/**
+	 * オブジェクトのステータスを設定する
 	 * @method _setStatus
 	 */
 	Block.prototype._setStatus = function () {
 
-	  if (Config.blockStatus[this.gridY][this.gridX] === 1) {
+	  if (Config.blockStatus[this.gridY][this.gridX] === 1 ||
+	      Config.blockStatus[this.gridY][this.gridX] === 16 ||
+	      Config.blockStatus[this.gridY][this.gridX] === 17 ||
+	      Config.blockStatus[this.gridY][this.gridX] === 18 ||
+	      Config.blockStatus[this.gridY][this.gridX] === 19 ||
+	      Config.blockStatus[this.gridY][this.gridX] === 20 ||
+	      Config.blockStatus[this.gridY][this.gridX] === 21 ||
+	      Config.blockStatus[this.gridY][this.gridX] === 22 ||
+	      Config.blockStatus[this.gridY][this.gridX] === 23) {
 	    this.isDestructible = true;
 	  }
 
@@ -38933,12 +39160,15 @@
 
 
 	/**
-	 * ブロックの破壊
+	 * ブロックを破壊する
 	 * @method vanish
+	 * @param {Number} 遅延時間[ms]
 	 */
 	Block.prototype.vanish = function (delay) {
 
 	  var delay = delay || 0;
+
+	  Config.blockStatus[this.gridY][this.gridX] = -1;
 
 	  setTimeout(function () {
 	    this.elm.tint = 0xff7e1f;
@@ -38948,7 +39178,7 @@
 	      onComplete: function () {
 
 	        this.elm.destroy();
-	        Config.blockStatus[this.gridY][this.gridX] = -1;
+	        this.elm = null;
 
 	      }.bind(this)
 	    });
@@ -38958,16 +39188,18 @@
 	};
 
 /***/ },
-/* 195 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @fileoverview Unit
+	 * グリッド状に配置されるオブジェクトを生成する
+	 * @class Unit
 	 * @constructor
-	 * @param gridX {Number}
-	 * @param gridY {Number}
-	 * @param texture {Object}
-	 * @param container {Object}
+	 * @param texture {PIXI.Texture} テクスチャ
+	 * @param container {PIXI.Container} 配置するコンテナ
+	 * @param gridX {Number} グリッドのX座標
+	 * @param gridY {Number} グリッドのX座標
+	 * @param opts {Object} オプション
 	 */
 
 	'use strict';
@@ -38983,13 +39215,15 @@
 	//   CONSTRUCTOR
 	// ================
 
-	var Unit = function (gridX, gridY, texture, container) {
+	var Unit = function (texture, container, gridX, gridY, opts) {
 
 	  this.gridX      = gridX;
 	  this.gridY      = gridY;
 
 	  this._texture   = texture;
 	  this._container = container;
+
+	  this.opts = opts || {};
 
 	  this._init.apply(this);
 
@@ -39016,7 +39250,7 @@
 	  this.elm = new PIXI.Sprite(this._texture);
 
 	  this.elm.anchor.set(0.5, 1);
-	  this.elm.position.set(Config.UNIT_SIZE * this.gridX + Config.UNIT_SIZE / 2, Config.UNIT_SIZE * (this.gridY + 1));
+	  this.elm.position.set(Config.UNIT_SIZE_X * this.gridX + Config.UNIT_SIZE_X / 2, Config.UNIT_SIZE_Y * (this.gridY + 1));
 	  this._container.addChild(this.elm);
 
 	};
@@ -39033,11 +39267,168 @@
 	};
 
 /***/ },
-/* 196 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @fileoverview Stage
+	 * プレイアブルキャラクターを生成する
+	 *
+	 * @class Enemy
+	 * @constructor
+	 * @extends Character
+	 * @param name {String} キャラクター名
+	 * @param container {PIXI.Container} 配置するコンテナ
+	 * @param gridX {Number} グリッドのX座標
+	 * @param gridY {Number} グリッドのX座標
+	 * @param opts {Object} オプション
+	 */
+
+	'use strict';
+
+	// ================
+	//     MODULE
+	// ================
+
+	var Config    = __webpack_require__(191),
+	    Character = __webpack_require__(193);
+
+
+	// ================
+	//   CONSTRUCTOR
+	// ================
+
+	var Enemy = function () {
+
+	  this._frame = 0;
+
+	  Character.apply(this, arguments);
+	};
+
+	module.exports = Enemy;
+
+	Enemy.prototype = Object.create(Character.prototype);
+	Enemy.prototype.constructor = Enemy;
+
+
+	// ================
+	//     CONSTANT
+	// ================
+
+
+	// ================
+	//      METHOD
+	// ================
+
+	/**
+	 * control
+	 * @method control
+	 */
+	Enemy.prototype.control = function () {
+
+	  if (this._frame < 120) {
+	    this.move('down');
+	  } else if (this._frame < 240) {
+	    this.move('left');
+	  } else if (this._frame < 360) {
+	    this.move('up');
+	  } else if (this._frame < 480) {
+	    this.move('right');
+	  } else {
+	    this._frame = 0;
+	  }
+
+	  this._frame++;
+
+	};
+
+/***/ },
+/* 198 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @class Debug
+	 * @constructor
+	 */
+
+	'use strict';
+
+	// ================
+	//     MODULE
+	// ================
+
+	var Config = __webpack_require__(191);
+
+
+	// ================
+	//   CONSTRUCTOR
+	// ================
+
+	var Debug = function (container) {
+
+	  this._container = container;
+
+	  this._init.apply(this);
+
+	};
+
+	module.exports = Debug;
+
+
+	// ================
+	//      METHOD
+	// ================
+
+	/**
+	 * 初期化
+	 * @method _init
+	 */
+	Debug.prototype._init = function () {
+
+	  this._showGrid();
+
+	};
+
+	/**
+	 * グリッドの描画
+	 * @method _showGrid
+	 */
+	Debug.prototype._showGrid = function () {
+
+	  var verticalLine = [],
+	      horizontalLine = [],
+	      debugStage = new PIXI.Container(),
+	      i;
+
+	  /**
+	   * グリッド-X
+	   */
+	  for (i = 0; i < Config.HORIZONTAL_UNIT; i++) {
+	    horizontalLine.push(new PIXI.Graphics().beginFill(Config.COLOR_YELLOW).drawRect(0, 0, 2, Config.HEIGHT));
+	    horizontalLine[i].position.set(Config.UNIT_SIZE_X * i, 0);
+	    debugStage.addChild(horizontalLine[i]);
+	  }
+
+	  /**
+	   * グリッド-Y
+	   */
+	  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
+	    verticalLine.push(new PIXI.Graphics().beginFill(Config.COLOR_RED).drawRect(0, 0, Config.WIDTH, 2));
+	    verticalLine[i].position.set(0, Config.UNIT_SIZE_Y * i);
+	    debugStage.addChild(verticalLine[i]);
+	  }
+
+	  debugStage.alpha = 0.5;
+	  this._container.addChild(debugStage);
+
+	};
+
+
+/***/ },
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @class Stage
 	 * @constructor
 	 */
 
@@ -39104,7 +39495,7 @@
 	    antialias:   true
 	  });
 
-	  this._rootContainer.position.set(-Config.UNIT_SIZE / 2);
+	  this._rootContainer.position.set(-Config.UNIT_SIZE_X / 2, Config.UNIT_SIZE_Y / 2);
 
 	  document.getElementById(Stage.STAGE_HTML_ID).appendChild(this._renderer.view);
 
@@ -39136,93 +39527,11 @@
 	};
 
 /***/ },
-/* 197 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @fileoverview Debug
-	 * @constructor
-	 */
-
-	'use strict';
-
-	// ================
-	//     MODULE
-	// ================
-
-	var Config = __webpack_require__(191);
-
-
-	// ================
-	//   CONSTRUCTOR
-	// ================
-
-	var Debug = function (container) {
-
-	  this._container = container;
-
-	  this._init.apply(this);
-
-	};
-
-	module.exports = Debug;
-
-
-	// ================
-	//      METHOD
-	// ================
-
-	/**
-	 * 初期化
-	 * @method _init
-	 */
-	Debug.prototype._init = function () {
-
-	//  this._showGrid();
-
-	};
-
-	/**
-	 * グリッドの描画
-	 * @method _showGrid
-	 */
-	Debug.prototype._showGrid = function () {
-
-	  var verticalLine = [],
-	      horizontalLine = [],
-	      debugStage = new PIXI.Container(),
-	      i;
-
-	  /**
-	   * 水平ライン
-	   */
-	  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
-	    verticalLine.push(new PIXI.Graphics().beginFill(Config.COLOR_RED).drawRect(0, 0, Config.WIDTH, 2));
-	    verticalLine[i].position.set(0, Config.UNIT_SIZE * i);
-	    debugStage.addChild(verticalLine[i]);
-	  }
-
-	  /**
-	   * 垂直ライン
-	   */
-	  for (i = 0; i < Config.HORIZONTAL_UNIT; i++) {
-	    horizontalLine.push(new PIXI.Graphics().beginFill(Config.COLOR_YELLOW).drawRect(0, 0, 2, Config.HEIGHT));
-	    horizontalLine[i].position.set(Config.UNIT_SIZE * i, 0);
-	    debugStage.addChild(horizontalLine[i]);
-	  }
-
-	  debugStage.alpha = 0.5;
-	  this._container.addChild(debugStage);
-
-	};
-
-
-/***/ },
-/* 198 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @fileoverview Scene
+	 * @class Scene
 	 * @constructor
 	 */
 
@@ -39233,8 +39542,8 @@
 	// ================
 
 	var Config = __webpack_require__(191),
-	    Unit   = __webpack_require__(195),
-	    Block  = __webpack_require__(194);
+	    Unit   = __webpack_require__(196),
+	    Block  = __webpack_require__(195);
 
 
 	// ================
@@ -39295,14 +39604,16 @@
 	      j;
 
 	  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
-
 	    for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
 
-	      var tmp = new Unit(j, i, this._ttBase[Config.baseStatus[i][j]], this._container);
-	      Config.baseStatus[i][j] = tmp;
+	      if (Config.baseStatus[i][j] >= 0) {
+	        var tmp = new Unit(this._ttBase[Config.baseStatus[i][j]], this._container, j, i);
+	        Config.baseStatus[i][j] = tmp;
+	      }
 
 	    }
 	  }
+
 	}
 
 
@@ -39316,12 +39627,10 @@
 	      j;
 
 	  for (i = 0; i < Config.VERTICAL_UNIT; i++) {
-
 	    for (j = 0; j < Config.HORIZONTAL_UNIT; j++) {
 
 	      if (Config.blockStatus[i][j] >= 0) {
-	        var tmp = new Block(j, i, this._ttBlock[Config.blockStatus[i][j]], this._container);
-	        tmp.elm.displayGroup = Config.fieldLayer;
+	        var tmp = new Block(this._ttBlock[Config.blockStatus[i][j]], this._container, j, i);
 	        Config.blockStatus[i][j] = tmp;
 	      }
 

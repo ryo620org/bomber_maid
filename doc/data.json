@@ -1,0 +1,1181 @@
+{
+    "project": {
+        "name": "BOMBER MAID",
+        "description": "hoge hoge",
+        "version": "0.1",
+        "url": "http://ryo620.com/"
+    },
+    "files": {
+        "app/develop/js/Block.js": {
+            "name": "app/develop/js/Block.js",
+            "modules": {},
+            "classes": {
+                "Block": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/Bomb.js": {
+            "name": "app/develop/js/Bomb.js",
+            "modules": {},
+            "classes": {
+                "Bomb": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/Character.js": {
+            "name": "app/develop/js/Character.js",
+            "modules": {},
+            "classes": {
+                "Character": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/Config.js": {
+            "name": "app/develop/js/Config.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/Debug.js": {
+            "name": "app/develop/js/Debug.js",
+            "modules": {},
+            "classes": {
+                "Debug": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/Enemy.js": {
+            "name": "app/develop/js/Enemy.js",
+            "modules": {},
+            "classes": {
+                "Enemy": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/Player.js": {
+            "name": "app/develop/js/Player.js",
+            "modules": {},
+            "classes": {
+                "Player": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/Scene.js": {
+            "name": "app/develop/js/Scene.js",
+            "modules": {},
+            "classes": {
+                "Scene": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/Stage.js": {
+            "name": "app/develop/js/Stage.js",
+            "modules": {},
+            "classes": {
+                "Stage": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/Unit.js": {
+            "name": "app/develop/js/Unit.js",
+            "modules": {},
+            "classes": {
+                "Unit": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "app/develop/js/index.js": {
+            "name": "app/develop/js/index.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {
+                "BOMBER_MAID_OBJECT": 1
+            }
+        }
+    },
+    "modules": {},
+    "classes": {
+        "Block": {
+            "name": "Block",
+            "shortname": "Block",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "app/develop/js/Block.js",
+            "line": 1,
+            "description": "グリッド状に配置されるブロックを生成する",
+            "is_constructor": 1,
+            "extends": "Unit",
+            "params": [
+                {
+                    "name": "texture",
+                    "description": "テクスチャ",
+                    "type": "PIXI.Texture"
+                },
+                {
+                    "name": "container",
+                    "description": "配置するコンテナ",
+                    "type": "PIXI.Container"
+                },
+                {
+                    "name": "gridX",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                },
+                {
+                    "name": "gridY",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                }
+            ]
+        },
+        "Bomb": {
+            "name": "Bomb",
+            "shortname": "Bomb",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "app/develop/js/Bomb.js",
+            "line": 1,
+            "description": "グリッド状に配置される爆弾を生成する\n一定時間後に爆発する",
+            "is_constructor": 1,
+            "extends": "Block",
+            "params": [
+                {
+                    "name": "texture",
+                    "description": "テクスチャ",
+                    "type": "PIXI.Texture"
+                },
+                {
+                    "name": "container",
+                    "description": "配置するコンテナ",
+                    "type": "PIXI.Container"
+                },
+                {
+                    "name": "gridX",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                },
+                {
+                    "name": "gridY",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                }
+            ]
+        },
+        "Character": {
+            "name": "Character",
+            "shortname": "Character",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "app/develop/js/Character.js",
+            "line": 1,
+            "description": "ステージ上を動くキャラクターを生成する",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "name",
+                    "description": "キャラクター名",
+                    "type": "String"
+                },
+                {
+                    "name": "container",
+                    "description": "配置するコンテナ",
+                    "type": "PIXI.Container"
+                },
+                {
+                    "name": "gridX",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                },
+                {
+                    "name": "gridY",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                }
+            ]
+        },
+        "Debug": {
+            "name": "Debug",
+            "shortname": "Debug",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "app/develop/js/Debug.js",
+            "line": 1,
+            "is_constructor": 1
+        },
+        "Enemy": {
+            "name": "Enemy",
+            "shortname": "Enemy",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "app/develop/js/Enemy.js",
+            "line": 1,
+            "description": "プレイアブルキャラクターを生成する",
+            "is_constructor": 1,
+            "extends": "Character",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "キャラクター名",
+                    "type": "String"
+                },
+                {
+                    "name": "container",
+                    "description": "配置するコンテナ",
+                    "type": "PIXI.Container"
+                },
+                {
+                    "name": "gridX",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                },
+                {
+                    "name": "gridY",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                }
+            ]
+        },
+        "Player": {
+            "name": "Player",
+            "shortname": "Player",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "app/develop/js/Player.js",
+            "line": 1,
+            "description": "プレイアブルキャラクターを生成する",
+            "is_constructor": 1,
+            "extends": "Character",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "キャラクター名",
+                    "type": "String"
+                },
+                {
+                    "name": "container",
+                    "description": "配置するコンテナ",
+                    "type": "PIXI.Container"
+                },
+                {
+                    "name": "gridX",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                },
+                {
+                    "name": "gridY",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                }
+            ]
+        },
+        "Scene": {
+            "name": "Scene",
+            "shortname": "Scene",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "app/develop/js/Scene.js",
+            "line": 1,
+            "is_constructor": 1
+        },
+        "Stage": {
+            "name": "Stage",
+            "shortname": "Stage",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "app/develop/js/Stage.js",
+            "line": 1,
+            "is_constructor": 1
+        },
+        "Unit": {
+            "name": "Unit",
+            "shortname": "Unit",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "app/develop/js/Unit.js",
+            "line": 1,
+            "description": "グリッド状に配置されるオブジェクトを生成する",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "texture",
+                    "description": "テクスチャ",
+                    "type": "PIXI.Texture"
+                },
+                {
+                    "name": "container",
+                    "description": "配置するコンテナ",
+                    "type": "PIXI.Container"
+                },
+                {
+                    "name": "gridX",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                },
+                {
+                    "name": "gridY",
+                    "description": "グリッドのX座標",
+                    "type": "Number"
+                }
+            ]
+        }
+    },
+    "elements": {},
+    "classitems": [
+        {
+            "file": "app/develop/js/Block.js",
+            "line": 31,
+            "description": "破壊できるかどうか",
+            "itemtype": "property",
+            "name": "isDestructible",
+            "type": "Boolean",
+            "class": "Block"
+        },
+        {
+            "file": "app/develop/js/Block.js",
+            "line": 49,
+            "description": "オブジェクトのレイヤーを設定する",
+            "itemtype": "method",
+            "name": "_setLayer",
+            "class": "Block"
+        },
+        {
+            "file": "app/develop/js/Block.js",
+            "line": 61,
+            "description": "オブジェクトのステータスを設定する",
+            "itemtype": "method",
+            "name": "_setStatus",
+            "class": "Block"
+        },
+        {
+            "file": "app/develop/js/Block.js",
+            "line": 76,
+            "description": "ブロックを破壊する",
+            "itemtype": "method",
+            "name": "vanish",
+            "params": [
+                {
+                    "name": "遅延時間[ms]",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Block"
+        },
+        {
+            "file": "app/develop/js/Bomb.js",
+            "line": 55,
+            "description": "一定時間アニメーションさせる",
+            "itemtype": "method",
+            "name": "_bombAnimation",
+            "class": "Bomb"
+        },
+        {
+            "file": "app/develop/js/Bomb.js",
+            "line": 76,
+            "description": "爆発させる",
+            "itemtype": "method",
+            "name": "explosion",
+            "class": "Bomb"
+        },
+        {
+            "file": "app/develop/js/Bomb.js",
+            "line": 90,
+            "description": "任意のグリッド上の状態をチェック",
+            "itemtype": "method",
+            "name": "checkUnit",
+            "class": "Bomb"
+        },
+        {
+            "file": "app/develop/js/Bomb.js",
+            "line": 119,
+            "description": "爆発してない場合のみ爆発させる",
+            "class": "Bomb"
+        },
+        {
+            "file": "app/develop/js/Bomb.js",
+            "line": 134,
+            "description": "上下左右に爆風を伸ばす",
+            "class": "Bomb"
+        },
+        {
+            "file": "app/develop/js/Bomb.js",
+            "line": 177,
+            "description": "爆風スプライトを一定時間後に消去",
+            "class": "Bomb"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 29,
+            "description": "キャラクター名",
+            "itemtype": "property",
+            "name": "name",
+            "type": "String",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 36,
+            "description": "親コンテナ",
+            "itemtype": "property",
+            "name": "_container",
+            "type": "PIXI.Container",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 43,
+            "description": "X座標",
+            "itemtype": "property",
+            "name": "gridX",
+            "type": "Number",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 50,
+            "description": "Y座標",
+            "itemtype": "property",
+            "name": "gridY",
+            "type": "Number",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 57,
+            "description": "内部X座標",
+            "itemtype": "property",
+            "name": "innerX",
+            "type": "Number",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 64,
+            "description": "内部Y座標",
+            "itemtype": "property",
+            "name": "innerY",
+            "type": "Number",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 71,
+            "description": "キャラクターの向き [Left: 0, Back: 1, Right: 2, Front: 3]",
+            "itemtype": "property",
+            "name": "direction",
+            "type": "Number",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 78,
+            "description": "アニメーション要素の配列",
+            "itemtype": "property",
+            "name": "_elmAnimationCharacter",
+            "type": "Array",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 85,
+            "description": "キャラクター要素",
+            "itemtype": "property",
+            "name": "elm",
+            "type": "PIXI.Container",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 103,
+            "description": "1方向のアニメーションフレーム数",
+            "itemtype": "property",
+            "name": "ANIMATION_FRAME",
+            "type": "Number",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 110,
+            "description": "方向数",
+            "itemtype": "property",
+            "name": "ANIMATION_DIRECTION",
+            "type": "Number",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 117,
+            "description": "グリッド上から上方向へのオフセット値",
+            "itemtype": "property",
+            "name": "SPRITE_OFFSET_Y",
+            "type": "Number",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 124,
+            "description": "内部グリッド分割数",
+            "itemtype": "property",
+            "name": "INNER_GRID",
+            "type": "Number",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 136,
+            "description": "初期化",
+            "itemtype": "method",
+            "name": "_init",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 143,
+            "description": "テクスチャの配列[Left: 0, Back: 1, Right: 2, Front: 3]",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 148,
+            "description": "キャラクターアニメーション要素の生成",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 172,
+            "description": "初期方向",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 177,
+            "description": "初期位置",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 192,
+            "description": "キャラクターの移動",
+            "itemtype": "method",
+            "name": "move",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 200,
+            "description": "向きを変更",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 210,
+            "description": "grid、innerの位置計算",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 230,
+            "description": "当たり判定",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 262,
+            "description": "移動",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 306,
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Character.js",
+            "line": 315,
+            "description": "ミス",
+            "itemtype": "method",
+            "name": "miss",
+            "class": "Character"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 1,
+            "description": "変数",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 14,
+            "description": "デバッグモード",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 19,
+            "description": "色の管理",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 26,
+            "description": "stage の幅",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 33,
+            "description": "stage の高さ",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 40,
+            "description": "ユニットサイズ",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 47,
+            "description": "キャラクターサイズ",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 53,
+            "description": "ブロック数",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 60,
+            "description": "キーコード",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 70,
+            "description": "キーの数",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 76,
+            "description": "チップの種類数",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 83,
+            "description": "ベースのマップ",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Config.js",
+            "line": 111,
+            "description": "ブロックのマップ",
+            "constant": "",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Debug.js",
+            "line": 34,
+            "description": "初期化",
+            "itemtype": "method",
+            "name": "_init",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Debug.js",
+            "line": 44,
+            "description": "グリッドの描画",
+            "itemtype": "method",
+            "name": "_showGrid",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Debug.js",
+            "line": 55,
+            "description": "グリッド-X",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Debug.js",
+            "line": 64,
+            "description": "グリッド-Y",
+            "class": "Debug"
+        },
+        {
+            "file": "app/develop/js/Enemy.js",
+            "line": 48,
+            "description": "control",
+            "itemtype": "method",
+            "name": "control",
+            "class": "Enemy"
+        },
+        {
+            "file": "app/develop/js/Player.js",
+            "line": 32,
+            "description": "所持ボムの数",
+            "class": "Player"
+        },
+        {
+            "file": "app/develop/js/Player.js",
+            "line": 55,
+            "description": "ステータス設定",
+            "itemtype": "method",
+            "name": "_setStatus",
+            "class": "Player"
+        },
+        {
+            "file": "app/develop/js/Player.js",
+            "line": 64,
+            "description": "爆弾を置く",
+            "itemtype": "method",
+            "name": "bomb",
+            "class": "Player"
+        },
+        {
+            "file": "app/develop/js/Scene.js",
+            "line": 44,
+            "description": "初期化",
+            "itemtype": "method",
+            "name": "_init",
+            "class": "Scene"
+        },
+        {
+            "file": "app/develop/js/Scene.js",
+            "line": 65,
+            "description": "地面を描画",
+            "itemtype": "method",
+            "name": "_showMap",
+            "class": "Scene"
+        },
+        {
+            "file": "app/develop/js/Scene.js",
+            "line": 88,
+            "description": "ブロックを描画",
+            "itemtype": "method",
+            "name": "_showBlock",
+            "class": "Scene"
+        },
+        {
+            "file": "app/develop/js/Stage.js",
+            "line": 41,
+            "description": "初期化",
+            "itemtype": "method",
+            "name": "_init",
+            "class": "Stage"
+        },
+        {
+            "file": "app/develop/js/Stage.js",
+            "line": 53,
+            "description": "ルートコンテナの生成",
+            "itemtype": "method",
+            "name": "_generateRoot",
+            "class": "Stage"
+        },
+        {
+            "file": "app/develop/js/Stage.js",
+            "line": 76,
+            "description": "コンテナの追加",
+            "itemtype": "method",
+            "name": "addContainer",
+            "class": "Stage"
+        },
+        {
+            "file": "app/develop/js/Stage.js",
+            "line": 90,
+            "description": "レンダリング",
+            "itemtype": "method",
+            "name": "rendering",
+            "class": "Stage"
+        },
+        {
+            "file": "app/develop/js/Unit.js",
+            "line": 48,
+            "description": "初期化",
+            "itemtype": "method",
+            "name": "_init",
+            "class": "Unit"
+        },
+        {
+            "file": "app/develop/js/Unit.js",
+            "line": 63,
+            "description": "テクスチャのセット",
+            "itemtype": "method",
+            "name": "setTexture",
+            "class": "Unit"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 1,
+            "description": "BOMBER MAID",
+            "class": ""
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 25,
+            "class": ""
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 31,
+            "memberof": "BOMBER_MAID",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 37,
+            "description": "初期化",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 43,
+            "description": "ローダーを生成",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 48,
+            "description": "キーの状態を保存\ntrue: 押されている, false: 押されていない",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 58,
+            "description": "キーボードが押されたイベント",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 69,
+            "description": "画像の読込後、ゲーム開始",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 78,
+            "description": "ステージ生成、レイヤー追加",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 90,
+            "description": "デバッグ追加",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 97,
+            "description": "シーン追加",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 102,
+            "description": "キャラクター追加",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 108,
+            "description": "敵追加",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 117,
+            "description": "読み込む",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        },
+        {
+            "file": "app/develop/js/index.js",
+            "line": 125,
+            "description": "メインループ",
+            "class": "",
+            "namespace": "BOMBER_MAID_OBJECT"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "replacing incorrect tag: function with method",
+            "line": " app/develop/js/Bomb.js:90"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:26"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:33"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:40"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:47"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:53"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:60"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:70"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:76"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:83"
+        },
+        {
+            "message": "unknown tag: constant",
+            "line": " app/develop/js/Config.js:111"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " app/develop/js/index.js:31"
+        },
+        {
+            "message": "Missing item type\n爆発してない場合のみ爆発させる",
+            "line": " app/develop/js/Bomb.js:119"
+        },
+        {
+            "message": "Missing item type\n上下左右に爆風を伸ばす",
+            "line": " app/develop/js/Bomb.js:134"
+        },
+        {
+            "message": "Missing item type\n爆風スプライトを一定時間後に消去",
+            "line": " app/develop/js/Bomb.js:177"
+        },
+        {
+            "message": "Missing item type\nテクスチャの配列[Left: 0, Back: 1, Right: 2, Front: 3]",
+            "line": " app/develop/js/Character.js:143"
+        },
+        {
+            "message": "Missing item type\nキャラクターアニメーション要素の生成",
+            "line": " app/develop/js/Character.js:148"
+        },
+        {
+            "message": "Missing item type\n初期方向",
+            "line": " app/develop/js/Character.js:172"
+        },
+        {
+            "message": "Missing item type\n初期位置",
+            "line": " app/develop/js/Character.js:177"
+        },
+        {
+            "message": "Missing item type\n向きを変更",
+            "line": " app/develop/js/Character.js:200"
+        },
+        {
+            "message": "Missing item type\ngrid、innerの位置計算",
+            "line": " app/develop/js/Character.js:210"
+        },
+        {
+            "message": "Missing item type\n当たり判定",
+            "line": " app/develop/js/Character.js:230"
+        },
+        {
+            "message": "Missing item type\n移動",
+            "line": " app/develop/js/Character.js:262"
+        },
+        {
+            "message": "Missing item type",
+            "line": " app/develop/js/Character.js:306"
+        },
+        {
+            "message": "Missing item type\n変数",
+            "line": " app/develop/js/Config.js:1"
+        },
+        {
+            "message": "Missing item type\nデバッグモード",
+            "line": " app/develop/js/Config.js:14"
+        },
+        {
+            "message": "Missing item type\n色の管理",
+            "line": " app/develop/js/Config.js:19"
+        },
+        {
+            "message": "Missing item type\nstage の幅",
+            "line": " app/develop/js/Config.js:26"
+        },
+        {
+            "message": "Missing item type\nstage の高さ",
+            "line": " app/develop/js/Config.js:33"
+        },
+        {
+            "message": "Missing item type\nユニットサイズ",
+            "line": " app/develop/js/Config.js:40"
+        },
+        {
+            "message": "Missing item type\nキャラクターサイズ",
+            "line": " app/develop/js/Config.js:47"
+        },
+        {
+            "message": "Missing item type\nブロック数",
+            "line": " app/develop/js/Config.js:53"
+        },
+        {
+            "message": "Missing item type\nキーコード",
+            "line": " app/develop/js/Config.js:60"
+        },
+        {
+            "message": "Missing item type\nキーの数",
+            "line": " app/develop/js/Config.js:70"
+        },
+        {
+            "message": "Missing item type\nチップの種類数",
+            "line": " app/develop/js/Config.js:76"
+        },
+        {
+            "message": "Missing item type\nベースのマップ",
+            "line": " app/develop/js/Config.js:83"
+        },
+        {
+            "message": "Missing item type\nブロックのマップ",
+            "line": " app/develop/js/Config.js:111"
+        },
+        {
+            "message": "Missing item type\nグリッド-X",
+            "line": " app/develop/js/Debug.js:55"
+        },
+        {
+            "message": "Missing item type\nグリッド-Y",
+            "line": " app/develop/js/Debug.js:64"
+        },
+        {
+            "message": "Missing item type\n所持ボムの数",
+            "line": " app/develop/js/Player.js:32"
+        },
+        {
+            "message": "Missing item type\nBOMBER MAID",
+            "line": " app/develop/js/index.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " app/develop/js/index.js:25"
+        },
+        {
+            "message": "Missing item type",
+            "line": " app/develop/js/index.js:31"
+        },
+        {
+            "message": "Missing item type\n初期化",
+            "line": " app/develop/js/index.js:37"
+        },
+        {
+            "message": "Missing item type\nローダーを生成",
+            "line": " app/develop/js/index.js:43"
+        },
+        {
+            "message": "Missing item type\nキーの状態を保存\ntrue: 押されている, false: 押されていない",
+            "line": " app/develop/js/index.js:48"
+        },
+        {
+            "message": "Missing item type\nキーボードが押されたイベント",
+            "line": " app/develop/js/index.js:58"
+        },
+        {
+            "message": "Missing item type\n画像の読込後、ゲーム開始",
+            "line": " app/develop/js/index.js:69"
+        },
+        {
+            "message": "Missing item type\nステージ生成、レイヤー追加",
+            "line": " app/develop/js/index.js:78"
+        },
+        {
+            "message": "Missing item type\nデバッグ追加",
+            "line": " app/develop/js/index.js:90"
+        },
+        {
+            "message": "Missing item type\nシーン追加",
+            "line": " app/develop/js/index.js:97"
+        },
+        {
+            "message": "Missing item type\nキャラクター追加",
+            "line": " app/develop/js/index.js:102"
+        },
+        {
+            "message": "Missing item type\n敵追加",
+            "line": " app/develop/js/index.js:108"
+        },
+        {
+            "message": "Missing item type\n読み込む",
+            "line": " app/develop/js/index.js:117"
+        },
+        {
+            "message": "Missing item type\nメインループ",
+            "line": " app/develop/js/index.js:125"
+        }
+    ]
+}

@@ -1,8 +1,13 @@
 /**
- * @fileoverview Character
+ * ステージ上を動くキャラクターを生成する
+ *
+ * @class Character
  * @constructor
- * @params gridX [number]
- * @params gridY [number]
+ * @param name {String} キャラクター名
+ * @param container {PIXI.Container} 配置するコンテナ
+ * @param gridX {Number} グリッドのX座標
+ * @param gridY {Number} グリッドのX座標
+ * @param opts {Object} オプション
  */
 
 
@@ -13,49 +18,87 @@
 //     MODULE
 // ================
 
-var Config = require('./Config'),
-    Bomb   = require('./Bomb');
+var Config = require('./Config');
 
 
 // ================
 //   CONSTRUCTOR
 // ================
 
-var Character = function (container, gridX, gridY) {
+var Character = function (name, container, gridX, gridY, opts) {
 
   /**
-   * キャラクターのコンテナ
+   * キャラクター名
+   * @property name
+   * @type String
+   */
+  this.name = name;
+
+  /**
+   * 親コンテナ
+   * @property _container
+   * @type PIXI.Container
    */
   this._container = container;
 
   /**
-   * キャラクター位置
+   * X座標
+   * @property gridX
+   * @type Number
    */
   this.gridX = gridX;
+
+  /**
+   * Y座標
+   * @property gridY
+   * @type Number
+   */
   this.gridY = gridY;
 
   /**
-   * キャラクターのコンテナ
+   * 内部X座標
+   * @property innerX
+   * @type Number
    */
-  this.numOfBomb = Character.INITIAL_BOMBS;
+  this.innerX = Character.INNER_GRID / 2;
 
   /**
-   * キャラクター向き
+   * 内部Y座標
+   * @property innerY
+   * @type Number
+   */
+  this.innerY = Character.INNER_GRID / 2;
+
+  /**
+   * キャラクターの向き [Left: 0, Back: 1, Right: 2, Front: 3]
+   * @property direction
+   * @type Number
    */
   this.direction = 3;
 
   /**
-   * キャラクターアニメーション要素の配列
+   * アニメーション要素の配列
+   * @property _elmAnimationCharacter
+   * @type Array
    */
   this._elmAnimationCharacter = [];
 
   /**
    * キャラクター要素
+   * @property elm
+   * @type PIXI.Container
    */
   this.elm = new PIXI.Container();
 
+  /**
+   * オプション
+   * @property opts
+   * @type Object
+   */
+  this.opts = opts || {};
+
   this._init.apply(this);
-  this.debugInit();
+
 };
 
 module.exports = Character;
@@ -65,10 +108,34 @@ module.exports = Character;
 //     CONSTANT
 // ================
 
-Character.ANIMATION_FRAME     = 4; // 4フレーム
-Character.ANIMATION_DIRECTION = 4; // 4方向
-Character.SPRITE_OFFSET_Y     = 8; // グリッド上でのオフセット値
-Character.INITIAL_BOMBS       = 3; // 初期爆弾数
+/**
+ * 1方向のアニメーションフレーム数
+ * @property ANIMATION_FRAME
+ * @type Number
+ */
+Character.ANIMATION_FRAME     = 4;
+
+/**
+ * 方向数
+ * @property ANIMATION_DIRECTION
+ * @type Number
+ */
+Character.ANIMATION_DIRECTION = 4;
+
+/**
+ * グリッド上から上方向へのオフセット値
+ * @property SPRITE_OFFSET_Y
+ * @type Number
+ */
+Character.SPRITE_OFFSET_Y     = 8;
+
+/**
+ * 内部グリッド分割数
+ * @property INNER_GRID
+ * @type Number
+ */
+Character.INNER_GRID          = 12;
+
 
 // ================
 //      METHOD
@@ -82,7 +149,7 @@ Character.prototype._init = function () {
 
   var i, j,
       /**
-       * テクスチャの配列（Left: 0, Back: 1, Right: 2, Front: 3）
+       * テクスチャの配列[Left: 0, Back: 1, Right: 2, Front: 3]
        */
       ttCharacter = [];
 
@@ -98,26 +165,32 @@ Character.prototype._init = function () {
                   j === 2 ? 0:
                   j === 3 ? 2:
                   0;
-      ttCharacter[i].push(PIXI.Texture.fromFrame('character-' + i + '-' + frame));
+      ttCharacter[i].push(PIXI.Texture.fromFrame(this.name + '-' + i + '-' + frame));
     }
 
     this._elmAnimationCharacter.push(new PIXI.extras.AnimatedSprite(ttCharacter[i]));
-    this._elmAnimationCharacter[i].play();
     this._elmAnimationCharacter[i].animationSpeed = 0.1;
     this._elmAnimationCharacter[i].anchor.set(0.5, 1);
     this._elmAnimationCharacter[i].position.y = -Character.SPRITE_OFFSET_Y;
     this._elmAnimationCharacter[i].visible = false;
+    this._elmAnimationCharacter[i].play();
     this.elm.addChild(this._elmAnimationCharacter[i]);
   }
 
-  this.elm.displayGroup = Config.fieldLayer;
-
   /**
-   * 初期方向を向く
+   * 初期方向
    */
   this._elmAnimationCharacter[this.direction].visible = true;
 
-  this.elm.position.set((this.gridX + 0.5) * Config.UNIT_SIZE, (this.gridY + 1) * Config.UNIT_SIZE);
+  /**
+   * 初期位置
+   */
+  this.elm.position.set((this.gridX + 0.5) * Config.UNIT_SIZE_X,
+                        (this.gridY + 1)   * Config.UNIT_SIZE_Y);
+
+
+  this.elm.displayGroup = Config.fieldLayer;
+  this.elm.zOrder = -this.elm.position.y;
 
   this._container.addChild(this.elm);
 
@@ -132,85 +205,117 @@ Character.prototype.move = function (direction) {
 
   var i,
 
-  /**
-   * 全てのアニメーションを非表示
-   */
-  changeOfDirection = function () {
-    for (i = 0; i < Character.ANIMATION_DIRECTION; i++) {
-      this._elmAnimationCharacter[i].visible = false;
-    }
-    this._elmAnimationCharacter[this.direction].visible = true;
-  }.bind(this);
+      /**
+       * 向きを変更
+       */
+      changeOfDirection = function () {
+        for (i = 0; i < Character.ANIMATION_DIRECTION; i++) {
+          this._elmAnimationCharacter[i].visible = false;
+        }
+        this._elmAnimationCharacter[this.direction].visible = true;
+      }.bind(this),
 
-  if (Config.blockStatus[this.gridY - 1][this.gridX] !== -1 && direction === 'up') {
-    changeOfDirection();
-    return 0;
-  }
-  if (Config.blockStatus[this.gridY + 1][this.gridX] !== -1 && direction === 'down') {
-    changeOfDirection();
-    return 0;
-  }
-  if (Config.blockStatus[this.gridY][this.gridX - 1] !== -1 && direction === 'left') {
-    changeOfDirection();
-    return 0;
-  }
-  if (Config.blockStatus[this.gridY][this.gridX + 1] !== -1 && direction === 'right') {
-    changeOfDirection();
-    return 0;
-  }
+      /**
+       * grid、innerの位置計算
+       */
+      checkGrid = function () {
+        if (this.innerX < 0) {
+          this.innerX = Character.INNER_GRID - 1;
+          this.gridX--;
+        } else if (this.innerX >= Character.INNER_GRID) {
+          this.innerX = 0;
+          this.gridX++;
+        }
+        if (this.innerY < 0) {
+          this.innerY = Character.INNER_GRID - 1;
+          this.gridY--;
+        } else if (this.innerY >= Character.INNER_GRID) {
+          this.innerY = 0;
+          this.gridY++;
+        }
+      }.bind(this),
+
+      /**
+       * 当たり判定
+       */
+      collisionDetection = function (x, y) {
+
+        if (direction === 'left' && this.innerX <= Character.INNER_GRID / 2) {
+          if (Config.blockStatus[y][x] !== -1) {
+            return false;
+          }
+        }
+
+        if (direction === 'right' && this.innerX >= Character.INNER_GRID / 2) {
+          if (Config.blockStatus[y][x] !== -1) {
+            return false;
+          }
+        }
+
+        if (direction === 'up' && this.innerY <= Character.INNER_GRID / 2) {
+          if (Config.blockStatus[y][x] !== -1) {
+            return false;
+          }
+        }
+
+        if (direction === 'down' && this.innerY >= Character.INNER_GRID / 2) {
+          if (Config.blockStatus[y][x] !== -1) {
+            return false;
+          }
+        }
+
+        return true;
+      }.bind(this);
 
   /**
-   * 表示切り替え & 移動
+   * 移動
    */
   switch (direction) {
     case 'left':
       this.direction = 0;
       changeOfDirection();
-      this.elm.x -= 4;
-      this.gridX = Math.floor(this.elm.x / Config.UNIT_SIZE);
+      if (collisionDetection(this.gridX - 1, this.gridY)) {
+        this.elm.x -= Config.UNIT_SIZE_X / Character.INNER_GRID;
+        this.innerX--;
+      }
       break;
+
     case 'up':
       this.direction = 1;
       changeOfDirection();
-      this.elm.y -= 4;
-      this.gridY = Math.floor((this.elm.y - 32) / Config.UNIT_SIZE);
+      if (collisionDetection(this.gridX, this.gridY - 1)) {
+        this.elm.y -= Config.UNIT_SIZE_Y / Character.INNER_GRID;
+        this.innerY--;
+      }
       break;
+
     case 'right':
       this.direction = 2;
       changeOfDirection();
-      this.elm.x += 4;
-      this.gridX = Math.floor(this.elm.x / Config.UNIT_SIZE);
+      if (collisionDetection(this.gridX + 1, this.gridY)) {
+        this.elm.x += Config.UNIT_SIZE_X / Character.INNER_GRID;
+        this.innerX++;
+      }
       break;
+
     case 'down':
       this.direction = 3;
       changeOfDirection();
-      this.elm.y += 4;
-      this.gridY = Math.floor((this.elm.y - 32) / Config.UNIT_SIZE);
+      if (collisionDetection(this.gridX, this.gridY + 1)) {
+        this.elm.y += Config.UNIT_SIZE_Y / Character.INNER_GRID;
+        this.innerY++;
+      }
       break;
+
     default:
       break;
   }
 
-};
+  /** z-index */
+  this.elm.zOrder = -this.elm.position.y;
 
 
-/**
- * 爆弾を置く
- * @method bomb
- */
-Character.prototype.bomb = function () {
-
-  if (this.numOfBomb > 0) {
-
-    if (Config.blockStatus[this.gridY][this.gridX] <= 0) {
-
-      this.numOfBomb--;
-
-      var tt   = PIXI.Texture.fromFrame('bomb-0');
-      var bomb = new Bomb(this.gridX, this.gridY, tt, this._container);
-
-    }
-  }
+  checkGrid();
 
 };
 
@@ -231,40 +336,5 @@ Character.prototype.miss = function () {
 
     }.bind(this)
   });
-
-};
-
-
-
-/**
- * デバッグ
- * @method debugInit
- */
-Character.prototype.debugInit = function () {
-
-  this.text = new PIXI.Text('[' + this.gridX + ', ' + this.gridY + ']', {
-    fill: 0xffffff,
-    stroke: 0x000000,
-    strokeThickness: 10
-  });
-
-  this.text.anchor.set(0.5);
-  this.text.position.set(100, 100);
-  this.rect = new PIXI.Graphics().beginFill(0x00ff00).drawRect(0, 0, Config.UNIT_SIZE, Config.UNIT_SIZE);
-  this.rect.alpha = 0.5;
-  this.rect.position.set(this.gridX * Config.UNIT_SIZE, this.gridY * Config.UNIT_SIZE);
-  this._container.addChild(this.text, this.rect);
-
-};
-
-/**
- * デバッグ
- * @method debug
- */
-Character.prototype.debug = function () {
-
-  this.text.text = '[' + this.gridX + ', ' + this.gridY + ']';
-
-  this.rect.position.set(this.gridX * Config.UNIT_SIZE, this.gridY * Config.UNIT_SIZE);
 
 };
