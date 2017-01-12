@@ -211,6 +211,10 @@ Character.prototype._init = function () {
  */
 Character.prototype.move = function (direction) {
 
+  if (this.elm === null) {
+    return 0;
+  }
+
   var i,
 
       /**
@@ -341,6 +345,7 @@ Character.prototype.miss = function () {
     onComplete: function () {
 
       this.elm.destroy({children: true});
+      this.elm = null;
 
     }.bind(this)
   });

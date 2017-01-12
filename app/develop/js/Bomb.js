@@ -94,10 +94,17 @@ Bomb.prototype.explosion = function () {
        */
       checkUnit = function (x, y) {
 
-        var mask = 0;
+        var mask = 0,
+            i;
 
         if (0 <= x && x < Config.HORIZONTAL_UNIT &&
             0 <= y && y < Config.VERTICAL_UNIT) {
+
+          for (i = 0; i < Config.enemys.length; i++) {
+            if (Config.enemys[i].gridX === x && Config.enemys[i].gridY === y) {
+              Config.enemys[i].miss();
+            }
+          }
 
           if (Config.player.gridX === x && Config.player.gridY === y) {
             Config.player.miss();

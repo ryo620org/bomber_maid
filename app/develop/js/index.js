@@ -19,6 +19,7 @@ var Config       = require('./Config'),
     Enemy        = require('./Enemy'),
     Debug        = require('./Debug'),
     Stage        = require('./Stage'),
+    Title        = require('./Title'),
     Scene        = require('./Scene');
 
 
@@ -73,13 +74,17 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
     .add('sprite', './_assets/img/sprite.json')
     .once('complete', function(){
 
-      var sceneContainer;
+      var sceneContainer,
+          titleContainer;
 
       /**
        * ステージ生成、レイヤー追加
        */
       this.stage     = new Stage();
       sceneContainer = this.stage.addContainer(sceneContainer);
+      titleContainer = this.stage.addContainer(titleContainer);
+      titleContainer.displayGroup = Config.OverlayLayer;
+      sceneContainer.position.set(-Config.UNIT_SIZE_X / 2, 0);
 
       if (Config.DEBUG_MODE) {
 
@@ -93,6 +98,10 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
         this.debug     = new Debug(debugContainer);
       }
 
+      /**
+       * タイトル
+       */
+      this.title     = new Title(titleContainer);
 
       /**
        * シーン追加
@@ -102,15 +111,16 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
       /**
        * キャラクター追加
        */
-      Config.player = new Player('player', sceneContainer, 10, 8);
-
+      Config.player = new Player('player', sceneContainer, 2, 2);
 
       /**
        * 敵追加
        */
-      Config.enemy = new Enemy('enemy', sceneContainer, 6, 5, {
-        speed: 0.5
-      });
+      Config.enemys = [];
+      Config.enemys.push(new Enemy('enemy', sceneContainer, 2, 16));
+      Config.enemys.push(new Enemy('enemy', sceneContainer, 18, 2));
+      Config.enemys.push(new Enemy('enemy', sceneContainer, 18, 16));
+      Config.enemys.push(new Enemy('enemy', sceneContainer, 10, 8));
 
       this.mainLoop();
 
@@ -128,9 +138,8 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
    * メインループ
    */
   mainLoop: function () {
-
     var tick = function () {
-      requestAnimationFrame(tick);
+      var i;
 
       this.stage.rendering();
 
@@ -150,7 +159,22 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
         Config.player.bomb();
       }
 
-      Config.enemy.control();
+      for (i = 0; i < Config.enemys.length; i++) {
+        Config.enemys[i].control();
+        if (Config.enemys[i].elm === null) {
+          Config.enemys.splice(i, 1);
+        }
+      }
+
+      if (Config.player.elm === null) {
+        this.title.showText('miss');
+      }
+
+      if (Config.enemys.length === 0) {
+        this.title.showText('clear');
+      }
+
+      requestAnimationFrame(tick);
 
     }.bind(this);
 

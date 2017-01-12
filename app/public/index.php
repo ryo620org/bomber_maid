@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="./_assets/css/bundle.css">
   </head>
   <body>
-    <h1>BOMBER MAID（← ↑ → ↓ + Space）</h1>
     <div class="stage" id="stage"></div>
     <script src="./_assets/js/bundle.js"></script>
   </body>

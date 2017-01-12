@@ -28,7 +28,7 @@ var Config    = require('./Config'),
 var Enemy = function () {
 
   this._frame = 0;
-
+  this._frameOffset =  + Math.floor(Math.random() * 30);
   Character.apply(this, arguments);
 
 };
@@ -54,23 +54,21 @@ Enemy.prototype.constructor = Enemy;
  */
 Enemy.prototype.control = function () {
 
-  this._frame++;
+  this.touch();
 
-  if (this._frame < 30) {
+  if (this._frame < 30 + this._frameOffset) {
     this.move('down');
-  } else if (this._frame < 60) {
+  } else if (this._frame < 60 + this._frameOffset) {
     this.move('left');
-  } else if (this._frame < 90) {
+  } else if (this._frame < 90 + this._frameOffset) {
     this.move('up');
-  } else if (this._frame < 120) {
+  } else if (this._frame < 120 + this._frameOffset) {
     this.move('right');
   } else {
     this._frame = 0;
   }
 
-  this.touch();
-  this.search();
-
+  this._frame++;
 };
 
 
@@ -84,28 +82,4 @@ Enemy.prototype.touch = function () {
     Config.player.miss();
   }
 
-};
-
-
-/**
- * search
- * @method search
- */
-Enemy.prototype.search = function () {
-
-  if (Config.player.gridX === this.gridX) {
-    if (this.direction === 0 && this.gridX > Config.player.gridX) {
-      Config.player.miss();
-    } else if (this.direction === 2 && this.gridX < Config.player.gridX) {
-      Config.player.miss();
-    }
-  }
-
-  if (Config.player.gridY === this.gridY) {
-    if (this.direction === 1 && this.gridY > Config.player.gridY) {
-      Config.player.miss();
-    } else if (this.direction === 3 && this.gridY < Config.player.gridY) {
-      Config.player.miss();
-    }
-  }
 };

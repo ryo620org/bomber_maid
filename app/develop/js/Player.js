@@ -54,15 +54,6 @@ Player.INITIAL_BOMBS       = 12; // 初期爆弾数
 // ================
 
 /**
- * ステータス設定
- * @method _setStatus
- */
-Player.prototype._setStatus = function () {
-
-};
-
-
-/**
  * 爆弾を置く
  * @method bomb
  */

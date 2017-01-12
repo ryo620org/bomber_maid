@@ -65,7 +65,8 @@
 	    Enemy        = __webpack_require__(197),
 	    Debug        = __webpack_require__(198),
 	    Stage        = __webpack_require__(199),
-	    Scene        = __webpack_require__(200);
+	    Title        = __webpack_require__(200),
+	    Scene        = __webpack_require__(201);
 
 
 	/**
@@ -119,13 +120,17 @@
 	    .add('sprite', './_assets/img/sprite.json')
 	    .once('complete', function(){
 
-	      var sceneContainer;
+	      var sceneContainer,
+	          titleContainer;
 
 	      /**
 	       * ステージ生成、レイヤー追加
 	       */
 	      this.stage     = new Stage();
 	      sceneContainer = this.stage.addContainer(sceneContainer);
+	      titleContainer = this.stage.addContainer(titleContainer);
+	      titleContainer.displayGroup = Config.OverlayLayer;
+	      sceneContainer.position.set(-Config.UNIT_SIZE_X / 2, 0);
 
 	      if (Config.DEBUG_MODE) {
 
@@ -139,6 +144,10 @@
 	        this.debug     = new Debug(debugContainer);
 	      }
 
+	      /**
+	       * タイトル
+	       */
+	      this.title     = new Title(titleContainer);
 
 	      /**
 	       * シーン追加
@@ -148,15 +157,16 @@
 	      /**
 	       * キャラクター追加
 	       */
-	      Config.player = new Player('player', sceneContainer, 10, 8);
-
+	      Config.player = new Player('player', sceneContainer, 2, 2);
 
 	      /**
 	       * 敵追加
 	       */
-	      Config.enemy = new Enemy('enemy', sceneContainer, 6, 5, {
-	        speed: 0.5
-	      });
+	      Config.enemys = [];
+	      Config.enemys.push(new Enemy('enemy', sceneContainer, 2, 16));
+	      Config.enemys.push(new Enemy('enemy', sceneContainer, 18, 2));
+	      Config.enemys.push(new Enemy('enemy', sceneContainer, 18, 16));
+	      Config.enemys.push(new Enemy('enemy', sceneContainer, 10, 8));
 
 	      this.mainLoop();
 
@@ -174,9 +184,8 @@
 	   * メインループ
 	   */
 	  mainLoop: function () {
-
 	    var tick = function () {
-	      requestAnimationFrame(tick);
+	      var i;
 
 	      this.stage.rendering();
 
@@ -196,7 +205,22 @@
 	        Config.player.bomb();
 	      }
 
-	      Config.enemy.control();
+	      for (i = 0; i < Config.enemys.length; i++) {
+	        Config.enemys[i].control();
+	        if (Config.enemys[i].elm === null) {
+	          Config.enemys.splice(i, 1);
+	        }
+	      }
+
+	      if (Config.player.elm === null) {
+	        this.title.showText('miss');
+	      }
+
+	      if (Config.enemys.length === 0) {
+	        this.title.showText('clear');
+	      }
+
+	      requestAnimationFrame(tick);
 
 	    }.bind(this);
 
@@ -38430,25 +38454,25 @@
 	 * @constant
 	 */
 	Config.blockStatus = [
-	  [-1, 0, 0, 0, 0,10, 0, 0, 0, 0, 0, 0, 0, 0, 0,10, 0, 0, 0, 0,-1],
+	  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	  [ 0, 0,-1, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4,-1, 2, 3, 4,-1, 0, 0],
-	  [ 0, 5, 1, 1,-1,-1, 1,-1, 1,-1, 5, 1, 1,-1,-1,-1,-1, 1, 1, 5, 0],
-	  [ 0, 7, 1, 0, 1,10, 1, 0, 1, 0, 6, 0, 1, 0,-1,10, 1, 0,-1, 7, 0],
-	  [ 0,-1, 1, 1,-1,-1,-1,-1, 1,-1, 7,-1,-1,-1, 1,-1, 1,-1,-1,-1, 0],
-	  [ 0,-1, 1, 0, 1, 0,-1, 0, 1, 0, 1, 0, 1, 0,-1, 0, 1, 0,-1,-1, 0],
+	  [ 0, 5,-1,-1,-1,-1, 1,-1, 1,-1, 1, 1, 1,-1,-1,-1,-1, 1,-1, 5, 0],
+	  [ 0, 7,-1, 0, 1,10, 1, 0, 1, 0, 5, 0, 1, 0,-1,10, 1, 0,-1, 7, 0],
+	  [ 0,-1,-1, 1,-1,-1,-1,-1, 1, 1, 6,-1,-1,-1, 1,-1, 1,-1,-1,-1, 0],
+	  [ 0,-1, 1, 0, 1, 0,-1, 0, 1, 0, 7, 0, 1, 0,-1, 0, 1, 0,-1,-1, 0],
 	  [ 0, 5, 1, 1,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1, 1,-1, 1,-1,-1, 5, 0],
-	  [ 0, 7,-1, 0,-1,10, 1, 0, 1, 0,-1, 0,-1, 0,-1,10, 1, 0, 1, 7, 0],
+	  [ 0, 7,-1, 0,-1,10, 1, 0, 1, 0, 1, 0,-1, 0,-1,10, 1, 0, 1, 7, 0],
 	  [ 0,-1, 1, 1, 1,-1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1, 1, 1,-1,-1, 0],
 	  [ 0,-1,-1, 0, 1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0, 1,-1,-1, 1, 0],
-	  [ 0, 5, 8,-1, 1,-1,-1,-1, 1,-1,-1,-1, 1,-1, 1,-1, 1,-1, 8, 5, 0],
-	  [ 0, 7, 1, 0,-1,10, 1, 0, 1, 0, 5, 0,-1, 0, 1,10, 1, 0, 1, 7, 0],
+	  [ 0, 5, 8,-1, 1,-1,-1,-1, 1,-1,-1,-1, 1,-1,-1,-1, 1,-1, 8, 5, 0],
+	  [ 0, 7, 1, 0,-1,10, 1, 0, 1, 0, 5, 0,-1, 0,-1,10, 1, 0, 1, 7, 0],
 	  [ 0,-1, 1, 1, 1,-1, 1, 1,-1,-1, 6,-1, 1, 1,-1,-1, 1, 1,-1,-1, 0],
 	  [ 0,-1,-1, 0, 1, 0,-1, 0,-1, 0, 7, 0,-1, 0,-1, 0, 1, 0,-1,-1, 0],
-	  [ 0,-1, 1, 1, 1,-1,-1, 1, 1, 1, 1,-1,-1, 1,-1,-1, 1,-1, 1,-1, 0],
-	  [ 0, 1,-1, 0,-1,10, 1, 0, 1, 0,-1, 0,-1, 0, 1,10,-1, 0, 1,-1, 0],
-	  [ 0,-1,-1,-1, 1,-1, 1,-1, 1, 1,-1,-1,-1,-1,-1, 1,-1, 1, 1,-1, 0],
+	  [ 0,-1, 1, 1, 1,-1,-1, 1, 1, 1, 1,-1,-1,-1,-1,-1, 1,-1, 1,-1, 0],
+	  [ 0, 1,-1, 0,-1,10, 1, 0, 1, 0,-1, 0,-1, 0, 1,10,-1, 0,-1,-1, 0],
+	  [ 0,-1,-1,-1, 1,-1, 1,-1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0],
 	  [ 0, 8,-1, 2, 3, 4, 8, 2, 3, 4,-1, 2, 3, 4, 8, 2, 3, 4,-1, 8, 0],
-	  [ 9, 9, 9, 9, 9,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,11, 9, 9, 9, 9, 9]
+	  [ 9, 9, 9, 9, 9,11, 0, 0, 0, 0,11, 0, 0, 0, 0,11, 9, 9, 9, 9, 9]
 	];
 
 /***/ },
@@ -38509,15 +38533,6 @@
 	// ================
 	//      METHOD
 	// ================
-
-	/**
-	 * ステータス設定
-	 * @method _setStatus
-	 */
-	Player.prototype._setStatus = function () {
-
-	};
-
 
 	/**
 	 * 爆弾を置く
@@ -38756,6 +38771,10 @@
 	 */
 	Character.prototype.move = function (direction) {
 
+	  if (this.elm === null) {
+	    return 0;
+	  }
+
 	  var i,
 
 	      /**
@@ -38886,6 +38905,7 @@
 	    onComplete: function () {
 
 	      this.elm.destroy({children: true});
+	      this.elm = null;
 
 	    }.bind(this)
 	  });
@@ -38992,10 +39012,17 @@
 	       */
 	      checkUnit = function (x, y) {
 
-	        var mask = 0;
+	        var mask = 0,
+	            i;
 
 	        if (0 <= x && x < Config.HORIZONTAL_UNIT &&
 	            0 <= y && y < Config.VERTICAL_UNIT) {
+
+	          for (i = 0; i < Config.enemys.length; i++) {
+	            if (Config.enemys[i].gridX === x && Config.enemys[i].gridY === y) {
+	              Config.enemys[i].miss();
+	            }
+	          }
 
 	          if (Config.player.gridX === x && Config.player.gridY === y) {
 	            Config.player.miss();
@@ -39310,7 +39337,7 @@
 	var Enemy = function () {
 
 	  this._frame = 0;
-
+	  this._frameOffset =  + Math.floor(Math.random() * 30);
 	  Character.apply(this, arguments);
 
 	};
@@ -39336,23 +39363,21 @@
 	 */
 	Enemy.prototype.control = function () {
 
-	  this._frame++;
+	  this.touch();
 
-	  if (this._frame < 30) {
+	  if (this._frame < 30 + this._frameOffset) {
 	    this.move('down');
-	  } else if (this._frame < 60) {
+	  } else if (this._frame < 60 + this._frameOffset) {
 	    this.move('left');
-	  } else if (this._frame < 90) {
+	  } else if (this._frame < 90 + this._frameOffset) {
 	    this.move('up');
-	  } else if (this._frame < 120) {
+	  } else if (this._frame < 120 + this._frameOffset) {
 	    this.move('right');
 	  } else {
 	    this._frame = 0;
 	  }
 
-	  this.touch();
-	  this.search();
-
+	  this._frame++;
 	};
 
 
@@ -39368,29 +39393,6 @@
 
 	};
 
-
-	/**
-	 * search
-	 * @method search
-	 */
-	Enemy.prototype.search = function () {
-
-	  if (Config.player.gridX === this.gridX) {
-	    if (this.direction === 0 && this.gridX > Config.player.gridX) {
-	      Config.player.miss();
-	    } else if (this.direction === 2 && this.gridX < Config.player.gridX) {
-	      Config.player.miss();
-	    }
-	  }
-
-	  if (Config.player.gridY === this.gridY) {
-	    if (this.direction === 1 && this.gridY > Config.player.gridY) {
-	      Config.player.miss();
-	    } else if (this.direction === 3 && this.gridY < Config.player.gridY) {
-	      Config.player.miss();
-	    }
-	  }
-	};
 
 /***/ },
 /* 198 */
@@ -39539,14 +39541,13 @@
 	  this._rootContainer = new PIXI.Container();
 	  this._rootContainer.displayList = new PIXI.DisplayList();
 
-	  Config.fieldLayer = new PIXI.DisplayGroup(1, true);
+	  Config.fieldLayer = new PIXI.DisplayGroup(0, true);
+	  Config.OverlayLayer = new PIXI.DisplayGroup(1, true);
 
 	  this._renderer = PIXI.autoDetectRenderer(Config.WIDTH, Config.HEIGHT, {
 	    transparent: true,
 	    antialias:   true
 	  });
-
-	  this._rootContainer.position.set(-Config.UNIT_SIZE_X / 2, Config.UNIT_SIZE_Y / 2);
 
 	  document.getElementById(Stage.STAGE_HTML_ID).appendChild(this._renderer.view);
 
@@ -39579,6 +39580,164 @@
 
 /***/ },
 /* 200 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * タイトル
+	 *
+	 * @class Title
+	 * @constructor
+	 * @param container {PIXI.Container} 配置するコンテナ
+	 */
+
+	'use strict';
+
+	// ================
+	//     MODULE
+	// ================
+
+	var Config    = __webpack_require__(191);
+
+
+	// ================
+	//   CONSTRUCTOR
+	// ================
+
+	var Title = function (container) {
+
+	  /**
+	   * 親コンテナ
+	   * @property _container
+	   * @type PIXI.Container
+	   */
+	  this._container = container;
+	  this.isMiss = false;
+	  this.isClear = false;
+
+	  this._inc.apply(this);
+
+	};
+
+	module.exports = Title;
+
+
+	// ================
+	//     CONSTANT
+	// ================
+
+
+	// ================
+	//      METHOD
+	// ================
+
+	/**
+	 * 初期化
+	 * @method _inc
+	 */
+	Title.prototype._inc = function () {
+
+	  var tt = PIXI.Texture.fromFrame('title');
+	  var elm = new PIXI.Sprite(tt);
+	  var bg = new PIXI.Graphics().beginFill(0x000000).drawRect(0, 0, Config.WIDTH, Config.HEIGHT);
+
+	  bg.alpha = 0.5;
+
+	  elm.anchor.set(0.5);
+	  elm.position.set(Config.WIDTH_HALF, Config.HEIGHT_HALF);
+	  elm.scale.set(10);
+	  elm.alpha = 0;
+	  this._container.addChild(bg, elm);
+
+	  TweenMax.to(elm.scale, 0.8, {
+	    x: 1,
+	    y: 1,
+	    ease: Bounce.easeOut
+	  });
+
+	  TweenMax.to(elm, 0.8, {
+	    alpha: 1
+	  });
+
+	  setTimeout(function () {
+	    TweenMax.to(elm, 0.5, {
+	      alpha: 0,
+	      onComplete: function () {
+	        this._showDescription();
+	      }.bind(this)
+	    });
+	  }.bind(this), 2000);
+
+	};
+
+	/**
+	 * 説明文
+	 * @method _showDescription
+	 */
+	Title.prototype._showDescription = function () {
+	  var tt = PIXI.Texture.fromFrame('description');
+	  var elm = new PIXI.Sprite(tt);
+
+	  elm.alpha = 0;
+	  elm.anchor.set(0.5);
+	  elm.position.set(Config.WIDTH_HALF, Config.HEIGHT_HALF + 100);
+
+	  this._container.addChild(elm);
+
+	  TweenMax.to(elm, 0.5, {
+	    alpha: 1,
+	    y: '-=' + 100
+	  });
+
+	  setTimeout(function () {
+	    TweenMax.to(this._container, 0.5, {
+	      alpha: 0,
+	      onComplete: function () {
+	        elm.destroy();
+	        elm = null;
+	      }
+	    });
+	  }.bind(this), 2000);
+	};
+
+	/**
+	 * テキスト表示
+	 * @method showText
+	 */
+	Title.prototype.showText = function (text) {
+
+	  if (text === 'miss') {
+	    if (this.isMiss === true) {
+	      console.log('h');
+	      return 0;
+	    } else {
+	      this.isMiss = true;
+	    }
+	  } else if (text === 'clear') {
+	    if (this.isClear === true) {
+	      return 0;
+	    } else {
+	      this.isClear = true;
+	    }
+	  }
+
+	  var tt = PIXI.Texture.fromFrame(text);
+	  var elm = new PIXI.Sprite(tt);
+
+	  elm.alpha = 0;
+	  elm.anchor.set(0.5);
+	  elm.position.set(Config.WIDTH_HALF, Config.HEIGHT_HALF + 100);
+
+	  this._container.addChild(elm);
+	  this._container.alpha = 1;
+
+	  TweenMax.to(elm, 0.5, {
+	    alpha: 1,
+	    y: '-=' + 100
+	  });
+	};
+
+/***/ },
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**

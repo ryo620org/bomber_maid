@@ -59,14 +59,13 @@ Stage.prototype._generateRoot = function () {
   this._rootContainer = new PIXI.Container();
   this._rootContainer.displayList = new PIXI.DisplayList();
 
-  Config.fieldLayer = new PIXI.DisplayGroup(1, true);
+  Config.fieldLayer = new PIXI.DisplayGroup(0, true);
+  Config.OverlayLayer = new PIXI.DisplayGroup(1, true);
 
   this._renderer = PIXI.autoDetectRenderer(Config.WIDTH, Config.HEIGHT, {
     transparent: true,
     antialias:   true
   });
-
-  this._rootContainer.position.set(-Config.UNIT_SIZE_X / 2, Config.UNIT_SIZE_Y / 2);
 
   document.getElementById(Stage.STAGE_HTML_ID).appendChild(this._renderer.view);
 
