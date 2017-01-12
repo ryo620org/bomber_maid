@@ -123,7 +123,6 @@ Title.prototype.showText = function (text) {
 
   if (text === 'miss') {
     if (this.isMiss === true) {
-      console.log('h');
       return 0;
     } else {
       this.isMiss = true;
