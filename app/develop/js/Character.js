@@ -8,6 +8,7 @@
  * @param gridX {Number} グリッドのX座標
  * @param gridY {Number} グリッドのX座標
  * @param opts {Object} オプション
+ * @param opts[speed] {Number} スピード
  */
 
 
@@ -96,6 +97,13 @@ var Character = function (name, container, gridX, gridY, opts) {
    * @type Object
    */
   this.opts = opts || {};
+
+  /**
+   * スピード
+   * @property speed
+   * @type Number
+   */
+  this.speed = this.opts.speed || 1;
 
   this._init.apply(this);
 
@@ -275,7 +283,7 @@ Character.prototype.move = function (direction) {
       this.direction = 0;
       changeOfDirection();
       if (collisionDetection(this.gridX - 1, this.gridY)) {
-        this.elm.x -= Config.UNIT_SIZE_X / Character.INNER_GRID;
+        this.elm.x -= Config.UNIT_SIZE_X / Character.INNER_GRID * this.speed;
         this.innerX--;
       }
       break;
@@ -284,7 +292,7 @@ Character.prototype.move = function (direction) {
       this.direction = 1;
       changeOfDirection();
       if (collisionDetection(this.gridX, this.gridY - 1)) {
-        this.elm.y -= Config.UNIT_SIZE_Y / Character.INNER_GRID;
+        this.elm.y -= Config.UNIT_SIZE_Y / Character.INNER_GRID * this.speed;
         this.innerY--;
       }
       break;
@@ -293,7 +301,7 @@ Character.prototype.move = function (direction) {
       this.direction = 2;
       changeOfDirection();
       if (collisionDetection(this.gridX + 1, this.gridY)) {
-        this.elm.x += Config.UNIT_SIZE_X / Character.INNER_GRID;
+        this.elm.x += Config.UNIT_SIZE_X / Character.INNER_GRID * this.speed;
         this.innerX++;
       }
       break;
@@ -302,7 +310,7 @@ Character.prototype.move = function (direction) {
       this.direction = 3;
       changeOfDirection();
       if (collisionDetection(this.gridX, this.gridY + 1)) {
-        this.elm.y += Config.UNIT_SIZE_Y / Character.INNER_GRID;
+        this.elm.y += Config.UNIT_SIZE_Y / Character.INNER_GRID * this.speed;
         this.innerY++;
       }
       break;

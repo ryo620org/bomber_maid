@@ -154,7 +154,9 @@
 	      /**
 	       * 敵追加
 	       */
-	      Config.enemy = new Enemy('enemy', sceneContainer, 6, 5);
+	      Config.enemy = new Enemy('enemy', sceneContainer, 6, 5, {
+	        speed: 0.5
+	      });
 
 	      this.mainLoop();
 
@@ -38551,6 +38553,7 @@
 	 * @param gridX {Number} グリッドのX座標
 	 * @param gridY {Number} グリッドのX座標
 	 * @param opts {Object} オプション
+	 * @param opts[speed] {Number} スピード
 	 */
 
 
@@ -38639,6 +38642,13 @@
 	   * @type Object
 	   */
 	  this.opts = opts || {};
+
+	  /**
+	   * スピード
+	   * @property speed
+	   * @type Number
+	   */
+	  this.speed = this.opts.speed || 1;
 
 	  this._init.apply(this);
 
@@ -38818,7 +38828,7 @@
 	      this.direction = 0;
 	      changeOfDirection();
 	      if (collisionDetection(this.gridX - 1, this.gridY)) {
-	        this.elm.x -= Config.UNIT_SIZE_X / Character.INNER_GRID;
+	        this.elm.x -= Config.UNIT_SIZE_X / Character.INNER_GRID * this.speed;
 	        this.innerX--;
 	      }
 	      break;
@@ -38827,7 +38837,7 @@
 	      this.direction = 1;
 	      changeOfDirection();
 	      if (collisionDetection(this.gridX, this.gridY - 1)) {
-	        this.elm.y -= Config.UNIT_SIZE_Y / Character.INNER_GRID;
+	        this.elm.y -= Config.UNIT_SIZE_Y / Character.INNER_GRID * this.speed;
 	        this.innerY--;
 	      }
 	      break;
@@ -38836,7 +38846,7 @@
 	      this.direction = 2;
 	      changeOfDirection();
 	      if (collisionDetection(this.gridX + 1, this.gridY)) {
-	        this.elm.x += Config.UNIT_SIZE_X / Character.INNER_GRID;
+	        this.elm.x += Config.UNIT_SIZE_X / Character.INNER_GRID * this.speed;
 	        this.innerX++;
 	      }
 	      break;
@@ -38845,7 +38855,7 @@
 	      this.direction = 3;
 	      changeOfDirection();
 	      if (collisionDetection(this.gridX, this.gridY + 1)) {
-	        this.elm.y += Config.UNIT_SIZE_Y / Character.INNER_GRID;
+	        this.elm.y += Config.UNIT_SIZE_Y / Character.INNER_GRID * this.speed;
 	        this.innerY++;
 	      }
 	      break;
@@ -39302,6 +39312,7 @@
 	  this._frame = 0;
 
 	  Character.apply(this, arguments);
+
 	};
 
 	module.exports = Enemy;
@@ -39325,20 +39336,60 @@
 	 */
 	Enemy.prototype.control = function () {
 
-	  if (this._frame < 120) {
+	  this._frame++;
+
+	  if (this._frame < 30) {
 	    this.move('down');
-	  } else if (this._frame < 240) {
+	  } else if (this._frame < 60) {
 	    this.move('left');
-	  } else if (this._frame < 360) {
+	  } else if (this._frame < 90) {
 	    this.move('up');
-	  } else if (this._frame < 480) {
+	  } else if (this._frame < 120) {
 	    this.move('right');
 	  } else {
 	    this._frame = 0;
 	  }
 
-	  this._frame++;
+	  this.touch();
+	  this.search();
 
+	};
+
+
+	/**
+	 * touch
+	 * @method touch
+	 */
+	Enemy.prototype.touch = function () {
+
+	  if (Config.player.gridX === this.gridX && Config.player.gridY === this.gridY) {
+	    Config.player.miss();
+	  }
+
+	};
+
+
+	/**
+	 * search
+	 * @method search
+	 */
+	Enemy.prototype.search = function () {
+
+	  if (Config.player.gridX === this.gridX) {
+	    if (this.direction === 0 && this.gridX > Config.player.gridX) {
+	      Config.player.miss();
+	    } else if (this.direction === 2 && this.gridX < Config.player.gridX) {
+	      Config.player.miss();
+	    }
+	  }
+
+	  if (Config.player.gridY === this.gridY) {
+	    if (this.direction === 1 && this.gridY > Config.player.gridY) {
+	      Config.player.miss();
+	    } else if (this.direction === 3 && this.gridY < Config.player.gridY) {
+	      Config.player.miss();
+	    }
+	  }
 	};
 
 /***/ },

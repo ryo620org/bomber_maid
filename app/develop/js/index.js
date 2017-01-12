@@ -108,7 +108,9 @@ BOMBER_MAID.BOMBER_MAID_OBJECT = {
       /**
        * 敵追加
        */
-      Config.enemy = new Enemy('enemy', sceneContainer, 6, 5);
+      Config.enemy = new Enemy('enemy', sceneContainer, 6, 5, {
+        speed: 0.5
+      });
 
       this.mainLoop();
 
